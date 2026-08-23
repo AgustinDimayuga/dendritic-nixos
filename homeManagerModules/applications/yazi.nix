@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   theme = config.theme;
@@ -19,13 +25,20 @@ in
     settings = {
       opener = {
         zathura = [
-          { run = ''zathura "$@"''; orphan = true; for = "unix"; }
+          {
+            run = ''zathura "$@"'';
+            orphan = true;
+            for = "unix";
+          }
         ];
       };
 
       open = {
         prepend_rules = [
-          { url = "*.pdf"; use = "zathura"; }
+          {
+            url = "*.pdf";
+            use = "zathura";
+          }
         ];
       };
     };

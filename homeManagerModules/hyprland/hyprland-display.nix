@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   options = {
     hyprland-desktop.enable = lib.mkEnableOption "enable Hyprland config for desktop (external monitor)";
@@ -16,15 +21,15 @@
         # shared/default settings — binds, general, decoration, etc.
       };
 
-	xdg.portal = {
-	  enable = true;
-	  extraPortals = with pkgs; [
-	    xdg-desktop-portal-gtk
-	    xdg-desktop-portal-hyprland # or your preferred backend
-	  ];
-  config.common.default = "*";
-	};
-}
+      xdg.portal = {
+        enable = true;
+        extraPortals = with pkgs; [
+          xdg-desktop-portal-gtk
+          xdg-desktop-portal-hyprland # or your preferred backend
+        ];
+        config.common.default = "*";
+      };
+    }
 
     # Desktop-only: specific monitor + resolution + refresh rate
     (lib.mkIf config.hyprland-desktop.enable {

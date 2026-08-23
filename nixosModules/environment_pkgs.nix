@@ -6,6 +6,8 @@
 
   environment.systemPackages = with pkgs; [
     vim
+    gcc
+    libnotify
     git
     wget
     neovim

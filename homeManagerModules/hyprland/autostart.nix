@@ -5,11 +5,11 @@
       _args = [
         "hyprland.start"
         (lib.generators.mkLuaInline ''
-          function()
-            hl.exec_cmd("waybar")
-            hl.exec_cmd("hyprlock")
-	    hl.exec_cmd("swaync")
-          end
+                    function()
+                      hl.exec_cmd("waybar")
+                      hl.exec_cmd("hyprlock")
+          	    hl.exec_cmd("swaync")
+                    end
         '')
       ];
     };

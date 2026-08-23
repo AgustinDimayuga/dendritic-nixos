@@ -1,13 +1,12 @@
-{config, lib, ...}: 
+{ config, lib, ... }:
 {
 
-	imports = [
-	  ./kitty.nix
-	  ./yazi.nix
-	  ./obs.nix
-	  ./zathura.nix
-	  ./git.nix
-	];
-
+  imports = [
+    ./kitty.nix
+    ./yazi.nix
+    ./obs.nix
+    ./zathura.nix
+    ./git.nix
+  ];
 
 }

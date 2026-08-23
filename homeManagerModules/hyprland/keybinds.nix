@@ -24,12 +24,26 @@ let
     resize = lua "hl.dsp.window.resize()";
   };
 
-  bind = keys: dispatcher: { _args = [ keys dispatcher ]; };
-  bindOpts = keys: dispatcher: opts: { _args = [ keys dispatcher opts ]; };
+  bind = keys: dispatcher: {
+    _args = [
+      keys
+      dispatcher
+    ];
+  };
+  bindOpts = keys: dispatcher: opts: {
+    _args = [
+      keys
+      dispatcher
+      opts
+    ];
+  };
 
-  workspaceBinds = lib.concatMap (i:
-    let key = if i == 10 then "0" else toString i;
-    in [
+  workspaceBinds = lib.concatMap (
+    i:
+    let
+      key = if i == 10 then "0" else toString i;
+    in
+    [
       (bind "SUPER + ${key}" (dsp.focusWorkspace i))
       (bind "SUPER + SHIFT + ${key}" (dsp.moveToWorkspace i))
     ]
@@ -39,8 +53,8 @@ in
   wayland.windowManager.hyprland.settings = {
     bind = [
       (bind "SUPER + U" (dsp.exec "pkill -USR1 waybar"))
-	  # Screenshots
-	  (bind "ALT + SHIFT + 4" (dsp.exec "hyprshot -m region"))
+      # Screenshots
+      (bind "ALT + SHIFT + 4" (dsp.exec "hyprshot -m region"))
 
       (bind "SUPER + Return" (dsp.exec terminal))
       (bind "SUPER + E" (dsp.exec fileManager))
@@ -71,17 +85,34 @@ in
       (bindOpts "SUPER + mouse:273" dsp.resize { mouse = true; })
 
       # Media/volume keys — folded in from old bindel/bindl
-      (bindOpts "XF86AudioRaiseVolume" (dsp.exec "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+") { locked = true; repeating = true; })
-      (bindOpts "XF86AudioLowerVolume" (dsp.exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") { locked = true; repeating = true; })
-      (bindOpts "XF86AudioMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") { locked = true; })
-      (bindOpts "XF86AudioMicMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") { locked = true; })
-      (bindOpts "XF86MonBrightnessUp" (dsp.exec "brightnessctl -e4 -n2 set 5%+") { locked = true; repeating = true; })
-      (bindOpts "XF86MonBrightnessDown" (dsp.exec "brightnessctl -e4 -n2 set 5%-") { locked = true; repeating = true; })
+      (bindOpts "XF86AudioRaiseVolume" (dsp.exec "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+") {
+        locked = true;
+        repeating = true;
+      })
+      (bindOpts "XF86AudioLowerVolume" (dsp.exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") {
+        locked = true;
+        repeating = true;
+      })
+      (bindOpts "XF86AudioMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") {
+        locked = true;
+      })
+      (bindOpts "XF86AudioMicMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") {
+        locked = true;
+      })
+      (bindOpts "XF86MonBrightnessUp" (dsp.exec "brightnessctl -e4 -n2 set 5%+") {
+        locked = true;
+        repeating = true;
+      })
+      (bindOpts "XF86MonBrightnessDown" (dsp.exec "brightnessctl -e4 -n2 set 5%-") {
+        locked = true;
+        repeating = true;
+      })
 
       (bindOpts "XF86AudioNext" (dsp.exec "playerctl next") { locked = true; })
       (bindOpts "XF86AudioPause" (dsp.exec "playerctl play-pause") { locked = true; })
       (bindOpts "XF86AudioPlay" (dsp.exec "playerctl play-pause") { locked = true; })
       (bindOpts "XF86AudioPrev" (dsp.exec "playerctl previous") { locked = true; })
-    ] ++ workspaceBinds;
+    ]
+    ++ workspaceBinds;
   };
 }

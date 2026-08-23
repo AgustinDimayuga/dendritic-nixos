@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   theme = config.theme;
@@ -127,7 +132,7 @@ let
   '';
 in
 {
-  home.packages = [ pkgs.rofi];
+  home.packages = [ pkgs.rofi ];
 
   xdg.configFile = {
     "rofi/config.rasi".text = configRasi;

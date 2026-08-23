@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   theme = config.theme;
@@ -580,7 +585,11 @@ in
             phone = "  ";
             portable = "  ";
             car = "  ";
-            default = [ "" "" "" ];
+            default = [
+              ""
+              ""
+              ""
+            ];
           };
           states = {
             warning = 85;
@@ -631,7 +640,17 @@ in
             critical = 10;
           };
           format = "{icon} {capacity}%";
-          "format-icons" = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂁" "󰂂" "󰁹" ];
+          "format-icons" = [
+            "󰁺"
+            "󰁻"
+            "󰁼"
+            "󰁽"
+            "󰁾"
+            "󰁿"
+            "󰂁"
+            "󰂂"
+            "󰁹"
+          ];
           "format-full" = "{icon} {capacity}%";
           "format-charging" = "󰂄 {capacity}%";
           tooltip = true;

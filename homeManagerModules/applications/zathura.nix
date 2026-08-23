@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   theme = config.theme;
@@ -70,7 +75,6 @@ in
 {
   programs.zathura = {
     enable = true;
-
 
     options = colors // {
       "window-title-basename" = true;
