@@ -1,0 +1,5 @@
+/nix/store/0fmajzm9bkx32xhrm3mj97b11cclha97-source/nixosModules/window_manager.nix
+/nix/store/0m15i1dr7axcfi48bn1m1bixs5p92f02-source/nixosModules/window_manager.nix
+/nix/store/2wz893rrdnv8c26r9rd5rlap2pjfg5z1-source/nixosModules/window_manager.nix
+/nix/store/2y6sni0n4nan074bsbxqijbah5ckw4h4-source/nixosModules/window_manager.nix
+/nix/store/4s9y8plbm7jrspwfd066c7hs1wdy18z4-source/nixosModules/window_manager.nix

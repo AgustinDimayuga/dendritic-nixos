@@ -1,0 +1,17 @@
+{ config, lib, pkgs, ... }:
+{
+  imports = [
+    ./hyprland-display.nix
+    ./look-and-feel.nix
+    ./keybinds.nix
+    ./input.nix
+    ./misc.nix
+    ./cursor.nix
+    ./waybar.nix
+    ./hyprpaper.nix
+    ./rofi.nix
+    ./hyprlock.nix
+    ./autostart.nix
+    ./fonts.nix
+  ];
+}
