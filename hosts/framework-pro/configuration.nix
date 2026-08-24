@@ -21,8 +21,11 @@
     ./../../nixosModules/env_shell.nix
     ./../../nixosModules/hardware.nix
     ./../../nixosModules/neovim-pkgs.nix
-    ./hardware-configuration.nix
     ./../../nixosModules/fonts.nix
+    ./../../nixosModules/plymouth.nix
+
+    ./hardware-configuration.nix
+
   ];
 
   touchpad.enable = true;

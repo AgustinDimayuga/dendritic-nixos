@@ -14,6 +14,8 @@
     kitty
     home-manager
     tmux
+    btop
+
   ];
 
 
