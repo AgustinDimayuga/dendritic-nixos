@@ -11,6 +11,11 @@
     yazi-gruvbox-flavor.url = "github:bennyyip/gruvbox-dark.yazi";
     yazi-gruvbox-flavor.flake = false;
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    spicetify-colorful.url = "github:sanoojes/spicetify-colorful";
+    spicetify-colorful.flake = false;
   };
 
   outputs =
@@ -22,6 +27,8 @@
       yazi-flavors,
       yazi-gruvbox-flavor,
       nix-vscode-extensions,
+      spicetify-colorful,
+      spicetify-nix,
     }@inputs:
     let
       lib = nixpkgs.lib;

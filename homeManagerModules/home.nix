@@ -1,7 +1,13 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   imports = [
+    inputs.spicetify-nix.homeManagerModules.default
     ./hyprland/hyprland.nix
     ./applications/applications.nix
     ./theme.nix

@@ -9,6 +9,7 @@
     ./git.nix
     ./tmux.nix
     ./vscode.nix
+    ./spotify.nix
   ];
 
 }
