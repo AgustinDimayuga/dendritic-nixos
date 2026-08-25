@@ -1,4 +1,42 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  theme = config.theme;
+
+  wallpaperFile = {
+    dracula = ../assets/wallpapers/nixos.png;
+    gruvbox = ../assets/wallpapers/gruvbox-dark-blue.png;
+  };
+
+  wallpaper = toString wallpaperFile.${theme};
+
+  draculaColors = {
+    label = "rgba(f8f8f2ff)";
+    labelDim = "rgba(6272a4ff)";
+    outer = "rgba(44475aff)";
+    inner = "rgba(282a36ff)";
+    font = "rgba(f8f8f2ff)";
+    check = "rgba(50fa7bff)";
+    fail = "rgba(ff5555ff)";
+  };
+
+  gruvboxColors = {
+    label = "rgba(ebdbb2ff)";
+    labelDim = "rgba(928374ff)";
+    outer = "rgba(3c3836ff)";
+    inner = "rgba(282828ff)";
+    font = "rgba(ebdbb2ff)";
+    check = "rgba(98971aff)";
+    fail = "rgba(cc241dff)";
+  };
+
+  c = if theme == "dracula" then draculaColors else gruvboxColors;
+in
 {
   programs.hyprlock = {
     enable = true;
@@ -11,7 +49,7 @@
       background = [
         {
           monitor = "";
-          path = "~/.dotfiles/wallpapers/nixos.png";
+          path = wallpaper;
           blur_passes = 1;
           blur_size = 8;
           noise = 0.015;
@@ -26,7 +64,7 @@
         {
           monitor = "";
           text = "$TIME";
-          color = "rgba(ebdbb2ff)";
+          color = c.label;
           font_size = 110;
           font_family = "CaskaydiaCove Nerd Font";
           position = "0, -200";
@@ -36,7 +74,7 @@
         {
           monitor = "";
           text = "$LAYOUT";
-          color = "rgba(928374ff)";
+          color = c.labelDim;
           font_size = 16;
           font_family = "CaskaydiaCove Nerd Font";
           position = "0, 320";
@@ -50,11 +88,11 @@
           monitor = "";
           size = "260, 60";
           outline_thickness = 3;
-          outer_color = "rgba(3c3836ff)";
-          inner_color = "rgba(282828ff)";
-          font_color = "rgba(ebdbb2ff)";
-          check_color = "rgba(98971aff)";
-          fail_color = "rgba(cc241dff)";
+          outer_color = c.outer;
+          inner_color = c.inner;
+          font_color = c.font;
+          check_color = c.check;
+          fail_color = c.fail;
           dots_size = 0.33;
           dots_spacing = 0.18;
           dots_center = false;

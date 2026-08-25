@@ -8,7 +8,7 @@
                     function()
                       hl.exec_cmd("waybar")
                       hl.exec_cmd("hyprlock")
-          	    hl.exec_cmd("swaync")
+          	          hl.exec_cmd("swaync")
                     end
         '')
       ];

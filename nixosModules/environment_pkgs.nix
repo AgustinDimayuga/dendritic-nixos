@@ -15,6 +15,7 @@
     home-manager
     tmux
     btop
+    util-linux
 
   ];
 

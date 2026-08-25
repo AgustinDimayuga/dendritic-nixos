@@ -7,6 +7,8 @@
     ./obs.nix
     ./zathura.nix
     ./git.nix
+    ./tmux.nix
+    ./vscode.nix
   ];
 
 }

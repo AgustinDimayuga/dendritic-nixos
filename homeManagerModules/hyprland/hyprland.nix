@@ -18,5 +18,6 @@
     ./hyprlock.nix
     ./autostart.nix
     ./fonts.nix
+    ./hypridle.nix
   ];
 }

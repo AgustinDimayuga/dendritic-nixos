@@ -23,6 +23,7 @@
     ./../../nixosModules/neovim-pkgs.nix
     ./../../nixosModules/fonts.nix
     ./../../nixosModules/plymouth.nix
+    ./hibernation.nix
 
     ./hardware-configuration.nix
 
