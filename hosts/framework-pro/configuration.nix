@@ -29,7 +29,6 @@
 
   ];
 
-  touchpad.enable = true;
   laptop-hardware.enable = true;
 
   networking.hostName = "framework-pro"; # Define your hostname.

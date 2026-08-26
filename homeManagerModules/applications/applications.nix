@@ -10,6 +10,8 @@
     ./tmux.nix
     ./vscode.nix
     ./spotify.nix
+    ./browserapplications.nix
+    ./chromium.nix
   ];
 
 }

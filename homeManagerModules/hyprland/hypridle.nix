@@ -36,7 +36,8 @@ in
 
     settings = {
       general = {
-        lock_cmd = "pidof hyprlock || hyprlock";
+        # remove grace if lid close is not properly working
+        lock_cmd = "pidof hyprlock || hyprlock --grace 100";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "hyprctl dispatch dpms on";
       };
