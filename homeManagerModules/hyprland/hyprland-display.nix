@@ -14,7 +14,6 @@
 
     # Shared base — ALWAYS on, no condition needed
     {
-      programs.kitty.enable = true; # required for the default Hyprland config
       wayland.windowManager.hyprland.enable = true;
       wayland.windowManager.hyprland.package = null;
       wayland.windowManager.hyprland.settings = {
@@ -47,8 +46,14 @@
     (lib.mkIf config.hyprland-laptop.enable {
       wayland.windowManager.hyprland.settings.monitor = [
         {
+          output = "DP-1";
+          mode = "2560x1440@360";
+          position = "-2560x0";
+          scale = 1;
+        }
+        {
           output = "eDP-1";
-          mode = "preferred";
+          mode = "2880x1920@120";
           position = "auto";
           scale = 2;
         }

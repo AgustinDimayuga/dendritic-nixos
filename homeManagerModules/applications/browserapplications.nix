@@ -27,5 +27,18 @@
       ];
       icon = ../assets/icons/outlook_icon.png;
     };
+    canvas = {
+      name = "Canvas";
+      genericName = "LMS Client";
+      comment = "School";
+      exec = "chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --disable-vulkan --app=https://canvas.calpoly.edu";
+      terminal = false;
+      categories = [
+        "Office"
+        "Utility"
+      ];
+      icon = ../assets/icons/canvas_logo.png;
+    };
+
   };
 }
