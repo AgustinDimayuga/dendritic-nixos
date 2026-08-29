@@ -11,7 +11,7 @@
 
   # Suspend-then-hibernate after this delay (tweak to taste)
   systemd.sleep.settings.Sleep = {
-    HibernateDelaySec = "5min";
+    HibernateDelaySec = "12min";
   };
 
   services.logind.settings.Login = {
