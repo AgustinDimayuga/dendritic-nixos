@@ -18,7 +18,7 @@
     LidSwitchIgnoreInhibited = "yes";
     HandleLidSwitch = "suspend-then-hibernate";
     HandleLidSwitchExternalPower = "suspend-then-hibernate";
-    HandleLidSwitchDocked = "suspend-then-hibernate";
+    HandleLidSwitchDocked = "ignore";
     lidSwitchExternalPower = "suspend-then-hibernate";
     lidSwitchDocked = "suspend-then-hibernate";
   };

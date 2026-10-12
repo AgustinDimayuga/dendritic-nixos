@@ -19,5 +19,6 @@
     ./autostart.nix
     ./fonts.nix
     ./hypridle.nix
+    ./clamshell.nix
   ];
 }
