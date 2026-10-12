@@ -45,17 +45,18 @@
     # Laptop-only: force built-in display
     (lib.mkIf config.hyprland-laptop.enable {
       wayland.windowManager.hyprland.settings.monitor = [
-        {
-          output = "DP-1";
-          mode = "2560x1440@360";
-          position = "-2560x0";
-          scale = 1;
-        }
+
         {
           output = "eDP-1";
           mode = "2880x1920@120";
           position = "auto";
           scale = 2;
+        }
+        {
+          output = "DP-1";
+          mode = "2560x1440@360";
+          position = "auto-right";
+          scale = 1;
         }
       ];
     })

@@ -31,6 +31,14 @@
 
   laptop-hardware.enable = true;
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+
+  services.blueman.enable = true;
+
+  programs.localsend.enable = true;
   networking.hostName = "framework-pro"; # Define your hostname.
   nix.settings.experimental-features = [
     "nix-command"

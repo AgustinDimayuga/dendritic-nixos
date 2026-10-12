@@ -579,12 +579,12 @@ in
           format = "{icon} {volume}%";
           "format-muted" = "󰖁 Muted";
           "format-icons" = {
-            headphone = "  ";
-            "hands-free" = "  ";
-            headset = "  ";
-            phone = "  ";
-            portable = "  ";
-            car = "  ";
+            headphone = "";
+            "hands-free" = "󰋎";
+            headset = "󰋎";
+            phone = "";
+            portable = "";
+            car = "";
             default = [
               ""
               ""
