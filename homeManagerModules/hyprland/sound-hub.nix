@@ -149,6 +149,7 @@ let
           -theme "$theme" \
           -mesg "$mesg" \
           -selected-row "$sel" \
+          -kb-accept-entry "Control+j,Return,KP_Enter" \
           -kb-move-char-back "Control+b" \
           -kb-move-char-forward "Control+f" \
           -kb-custom-1 "Left" \
