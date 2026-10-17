@@ -576,7 +576,7 @@ in
 
         pulseaudio = {
           "scroll-step" = 1;
-          format = "{icon} {volume}%";
+          format = "󰕾 {volume}%";
           "format-muted" = "󰖁 Muted";
           "format-icons" = {
             headphone = "";

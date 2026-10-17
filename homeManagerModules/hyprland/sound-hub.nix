@@ -51,6 +51,11 @@ let
     .title {
       font-weight: bold;
     }
+    .section {
+      opacity: 0.6;
+      font-size: 10pt;
+      padding: 4px 10px 0 10px;
+    }
     .pct {
       color: ${p.accent};
       font-weight: bold;
@@ -124,6 +129,7 @@ let
         GtkLayerShell = None
 
     SINK = "@DEFAULT_AUDIO_SINK@"
+    SOURCE = "@DEFAULT_AUDIO_SOURCE@"
     PIDFILE = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "sound-hub.pid")
 
 
@@ -148,33 +154,33 @@ let
             pass
 
 
-    def get_volume():
-        out = run("wpctl", "get-volume", SINK)
+    def get_volume(target=SINK):
+        out = run("wpctl", "get-volume", target)
         m = re.search(r"([0-9]+(?:\.[0-9]+)?)", out)
         vol = int(round(float(m.group(1)) * 100)) if m else 0
         return vol, "MUTED" in out
 
 
-    def get_default_sink_id():
-        m = re.match(r"\s*id (\d+)", run("wpctl", "inspect", SINK))
+    def get_default_id(target):
+        m = re.match(r"\s*id (\d+)", run("wpctl", "inspect", target))
         return int(m.group(1)) if m else None
 
 
-    def get_sinks():
+    def get_nodes(media_class):
         try:
             nodes = json.loads(run("pw-dump") or "[]")
         except ValueError:
             return []
-        sinks = []
+        found = []
         for node in nodes:
             if node.get("type") != "PipeWire:Interface:Node":
                 continue
             props = (node.get("info") or {}).get("props") or {}
-            if props.get("media.class") != "Audio/Sink":
+            if props.get("media.class") != media_class:
                 continue
             name = props.get("node.description") or props.get("node.name") or str(node["id"])
-            sinks.append((node["id"], name))
-        return sinks
+            found.append((node["id"], name))
+        return found
 
 
     def toggle_existing_instance():
@@ -256,15 +262,25 @@ let
             card.pack_start(panel, False, False, 0)
 
             # output devices
-            self.devices = Gtk.ListBox()
-            self.devices.set_selection_mode(Gtk.SelectionMode.NONE)
-            self.devices.connect("row-activated", self.on_device_clicked)
+            card.pack_start(self.make_section("Output"), False, False, 0)
+            self.devices = self.make_device_list()
             card.pack_start(self.devices, False, False, 0)
+
+            # input devices (hidden when there is no microphone)
+            self.input_label = self.make_section("Input")
+            self.inputs = self.make_device_list()
+            for widget in (self.input_label, self.inputs):
+                widget.set_no_show_all(True)
+                card.pack_start(widget, False, False, 0)
 
             # mute + settings
             self.mute_btn = self.make_button("Mute", self.on_mute_clicked)
+            self.mic_btn = self.make_button("Mute microphone", self.on_mic_mute_clicked)
+            self.mic_btn.show_all()  # before no_show_all, so its label is shown too
+            self.mic_btn.set_no_show_all(True)
             settings_btn = self.make_button("Sound settings", self.on_settings_clicked)
             card.pack_start(self.mute_btn, False, False, 0)
+            card.pack_start(self.mic_btn, False, False, 0)
             card.pack_start(settings_btn, False, False, 0)
 
             self.connect("key-press-event", self.on_key)
@@ -276,6 +292,17 @@ let
 
         # ------------------------------------------------------------ builders --
 
+        def make_section(self, text):
+            label = Gtk.Label(label=text, xalign=0)
+            label.get_style_context().add_class("section")
+            return label
+
+        def make_device_list(self):
+            box = Gtk.ListBox()
+            box.set_selection_mode(Gtk.SelectionMode.NONE)
+            box.connect("row-activated", self.on_device_clicked)
+            return box
+
         def make_button(self, text, handler):
             btn = Gtk.Button()
             label = Gtk.Label(label=text, xalign=0)
@@ -286,21 +313,21 @@ let
             btn.label = label
             return btn
 
-        def rebuild_devices(self, sinks, current):
-            for child in self.devices.get_children():
-                self.devices.remove(child)
-            for sink_id, name in sinks:
-                is_current = sink_id == current
+        def rebuild_devices(self, box, nodes, current):
+            for child in box.get_children():
+                box.remove(child)
+            for node_id, name in nodes:
+                is_current = node_id == current
                 row = Gtk.ListBoxRow()
-                row.sink_id = sink_id
+                row.node_id = node_id
                 label = Gtk.Label(label=("●  " if is_current else "○  ") + name, xalign=0)
                 label.set_ellipsize(3)  # Pango.EllipsizeMode.END
                 row.add(label)
                 row.get_style_context().add_class("row")
                 if is_current:
                     row.get_style_context().add_class("current")
-                self.devices.add(row)
-            self.devices.show_all()
+                row.show_all()
+                box.add(row)
 
         # ------------------------------------------------------------- state ----
 
@@ -314,7 +341,14 @@ let
                 self.updating = False
                 self.pct.set_text("Muted" if muted else "%d%%" % vol)
             self.mute_btn.label.set_text("Unmute" if muted else "Mute")
-            self.rebuild_devices(get_sinks(), get_default_sink_id())
+            self.rebuild_devices(self.devices, get_nodes("Audio/Sink"), get_default_id(SINK))
+
+            sources = get_nodes("Audio/Source")
+            self.rebuild_devices(self.inputs, sources, get_default_id(SOURCE))
+            _vol, mic_muted = get_volume(SOURCE)
+            self.mic_btn.label.set_text("Unmute microphone" if mic_muted else "Mute microphone")
+            for widget in (self.input_label, self.inputs, self.mic_btn):
+                widget.set_visible(bool(sources))
             return False
 
         def schedule_refresh(self):
@@ -363,11 +397,15 @@ let
         # ----------------------------------------------------------- buttons ----
 
         def on_device_clicked(self, _box, row):
-            fire("wpctl", "set-default", str(row.sink_id))
+            fire("wpctl", "set-default", str(row.node_id))
             GLib.timeout_add(150, self.do_scheduled_refresh)
 
         def on_mute_clicked(self, _btn):
             fire("wpctl", "set-mute", SINK, "toggle")
+            GLib.timeout_add(150, self.do_scheduled_refresh)
+
+        def on_mic_mute_clicked(self, _btn):
+            fire("wpctl", "set-mute", SOURCE, "toggle")
             GLib.timeout_add(150, self.do_scheduled_refresh)
 
         def on_settings_clicked(self, _btn):
@@ -416,7 +454,7 @@ let
                 return
             if line is None:
                 return
-            if re.search(r" on (sink|card|server) ", line):
+            if re.search(r" on (sink|source|card|server) ", line):
                 self.schedule_refresh()
             stream.read_line_async(GLib.PRIORITY_DEFAULT, None, self.on_event_line)
 
