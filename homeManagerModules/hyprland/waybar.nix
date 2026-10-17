@@ -7,6 +7,11 @@
 
 let
   theme = config.theme;
+  # Nerd Font Material Design bluetooth icons, by codepoint
+  #
+  btOn = builtins.fromJSON ''"\udb80\udcaf"''; # f00af
+  btConnected = builtins.fromJSON ''"\udb80\udcb1"''; # f00b1
+  btOff = builtins.fromJSON ''"\udb80\udcb2"''; # f00b2
 
   draculaStyle = ''
     * {
@@ -17,6 +22,28 @@ let
       font-size: 15px;
       min-height: 0;
     }
+
+    #connectivity {
+        background: #44475a;
+        margin: 4px 6px 4px 4px;
+        border-radius: 6px;
+      }
+
+    #connectivity #tray,
+    #connectivity #bluetooth {
+        background: transparent;
+        margin: 0;
+        padding: 0 0.5em;
+      }
+
+    #bluetooth.off,
+    #bluetooth.disabled {
+        color: #6272a4;
+      }
+
+    #bluetooth.connected {
+        color: #8be9fd;
+      }
 
     #custom-calcurse {
       background: #44475a;
@@ -270,6 +297,33 @@ let
       min-height: 0;
     }
 
+
+    #connectivity {
+        background: #32302f;
+        margin: 4px 6px 4px 4px;
+        border-radius: 6px;
+      }
+
+    #connectivity #tray,
+    #connectivity #bluetooth {
+        background: transparent;
+        margin: 0;
+        padding: 0 0.5em;
+      }
+
+    #bluetooth {
+        color: #ebdbb2;
+      }
+
+    #bluetooth.off,
+    #bluetooth.disabled {
+        color: #928374;
+      }
+
+    #bluetooth.connected {
+        color: #83a598;
+      }
+
     #custom-calcurse {
       background: #32302f;
       color: #ebdbb2;
@@ -496,7 +550,7 @@ in
         ];
 
         "modules-right" = [
-          "tray"
+          "group/connectivity"
           "idle_inhibitor"
           "temperature"
           "backlight"
@@ -617,6 +671,23 @@ in
           interval = 10;
           tooltip = false;
         };
+        "group/connectivity" = {
+          orientation = "horizontal";
+          modules = [
+            "tray"
+            "bluetooth"
+          ];
+        };
+
+        bluetooth = {
+          format = btOn;
+          "format-off" = btOff;
+          "format-disabled" = btOff;
+          "format-connected" = btConnected;
+          "tooltip-format" = "Bluetooth {status}";
+          "tooltip-format-connected" = "{device_alias}";
+          "on-click" = "bluetooth-hub";
+        };
 
         temperature = {
           "hwmon-path" = "/sys/class/hwmon/hwmon3/temp1_input";
@@ -629,6 +700,7 @@ in
         backlight = {
           format = "󰃠 {percent}%";
           "on-scroll-up" = "brightness.sh --dec";
+          "on-click" = "brightness-hub";
           "on-scroll-down" = "brightness.sh --inc";
           "smooth-scrolling-threshold" = 5;
         };

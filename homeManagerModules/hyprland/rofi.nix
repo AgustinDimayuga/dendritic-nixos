@@ -44,7 +44,7 @@ let
         lines: 5;
         font: "JetBrainsMono Nerd Font 14";
         show-icons: true;
-        terminal: "alacritty";
+        terminal: "kitty";
         drun-display-format: "{icon} {name}";
         drun-match-fields: "name,generic,keywords";
         matching: "fuzzy";
