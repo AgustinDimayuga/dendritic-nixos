@@ -8,232 +8,502 @@
 let
   theme = config.theme;
 
-  draculaColors = ''
+  palettes = {
+    dracula = {
+      bg = "#282a36";
+      panel = "#44475a";
+      border = "#f8f8f2";
+      selBg = "#44475a";
+      fg = "#f8f8f2";
+      accent = "#8be9fd";
+    };
+    gruvbox = {
+      bg = "#282828";
+      panel = "#3c3836";
+      border = "#ebdbb2";
+      selBg = "#504945";
+      fg = "#ebdbb2";
+      accent = "#fabd2f";
+    };
+  };
+  p = palettes.${theme};
+
+  css = pkgs.writeText "sound-hub.css" ''
     * {
-        bg-col:  #282a36;
-        panel: #44475a;
-        border-col: #f8f8f2;
-        selected-col: #44475a;
-        sel-text: #8be9fd;
-        fg-col: #f8f8f2;
-        fg-col2: #6272a4;
+      font-family: "JetBrainsMono Nerd Font";
+      font-size: 13pt;
+      color: ${p.fg};
+    }
+    window, window.background {
+      background: transparent;
+    }
+    .card {
+      background: ${p.bg};
+      border: 2px solid ${p.border};
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .panel {
+      background: ${p.panel};
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .title {
+      font-weight: bold;
+    }
+    .pct {
+      color: ${p.accent};
+      font-weight: bold;
+    }
+    scale trough {
+      background: ${p.bg};
+      min-height: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    scale highlight {
+      background: ${p.accent};
+      border-radius: 5px;
+      border: none;
+    }
+    scale slider {
+      background: ${p.fg};
+      min-width: 20px;
+      min-height: 20px;
+      margin: -6px;
+      border-radius: 10px;
+      border: none;
+      box-shadow: none;
+    }
+    .row, row.row {
+      background: transparent;
+      background-image: none;
+      border: none;
+      box-shadow: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    button.row:hover, row.row:hover {
+      background: ${p.selBg};
+      background-image: none;
+    }
+    row.current label {
+      color: ${p.accent};
+    }
+    list, list row {
+      background: transparent;
     }
   '';
 
-  gruvboxColors = ''
-    * {
-        bg-col:  #282828;
-        panel: #3c3836;
-        border-col: #ebdbb2;
-        selected-col: #a89984;
-        sel-text: #282828;
-        fg-col: #ebdbb2;
-        fg-col2: #d5c4a1;
-    }
+  script = pkgs.writeText "sound-hub.py" ''
+    #!/usr/bin/env python3
+    """sound-hub: small popup with a draggable volume slider and output device list."""
+
+    import json
+    import os
+    import re
+    import signal
+    import subprocess
+    import sys
+    import time
+
+    # gtk-layer-shell must be preloaded (see the Nix wrapper). Drop it from the
+    # environment so the helper programs we spawn don't inherit it.
+    os.environ.pop("LD_PRELOAD", None)
+
+    import gi
+
+    gi.require_version("Gtk", "3.0")
+    gi.require_version("Gdk", "3.0")
+    from gi.repository import Gdk, Gio, GLib, Gtk
+
+    try:
+        gi.require_version("GtkLayerShell", "0.1")
+        from gi.repository import GtkLayerShell
+    except (ValueError, ImportError):
+        GtkLayerShell = None
+
+    SINK = "@DEFAULT_AUDIO_SINK@"
+    PIDFILE = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "sound-hub.pid")
+
+
+    # ---------------------------------------------------------------- helpers ---
+
+
+    def run(*argv):
+        try:
+            return subprocess.run(argv, capture_output=True, text=True, timeout=3).stdout
+        except (OSError, subprocess.SubprocessError):
+            return ""
+
+
+    def fire(*argv):
+        """Start a command and don't wait for it."""
+        try:
+            Gio.Subprocess.new(
+                list(argv),
+                Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE,
+            )
+        except GLib.Error:
+            pass
+
+
+    def get_volume():
+        out = run("wpctl", "get-volume", SINK)
+        m = re.search(r"([0-9]+(?:\.[0-9]+)?)", out)
+        vol = int(round(float(m.group(1)) * 100)) if m else 0
+        return vol, "MUTED" in out
+
+
+    def get_default_sink_id():
+        m = re.match(r"\s*id (\d+)", run("wpctl", "inspect", SINK))
+        return int(m.group(1)) if m else None
+
+
+    def get_sinks():
+        try:
+            nodes = json.loads(run("pw-dump") or "[]")
+        except ValueError:
+            return []
+        sinks = []
+        for node in nodes:
+            if node.get("type") != "PipeWire:Interface:Node":
+                continue
+            props = (node.get("info") or {}).get("props") or {}
+            if props.get("media.class") != "Audio/Sink":
+                continue
+            name = props.get("node.description") or props.get("node.name") or str(node["id"])
+            sinks.append((node["id"], name))
+        return sinks
+
+
+    def toggle_existing_instance():
+        """If a hub is already open, close it and tell the caller to exit."""
+        try:
+            with open(PIDFILE) as f:
+                pid = int(f.read().strip())
+            with open("/proc/%d/cmdline" % pid, "rb") as f:
+                cmdline = f.read()
+            if pid != os.getpid() and b"sound-hub" in cmdline:
+                os.kill(pid, signal.SIGTERM)
+                return True
+        except (OSError, ValueError):
+            pass
+        return False
+
+
+    # -------------------------------------------------------------------- UI ----
+
+
+    class Hub(Gtk.Window):
+        def __init__(self):
+            super().__init__(title="sound-hub")
+            self.updating = False
+            self.dragging = False
+            self.muted = False
+            self.pending = None
+            self.flush_id = None
+            self.refresh_id = None
+            self.last_user_change = 0.0
+            self.was_active = False
+            self.watcher = None
+
+            self.set_resizable(False)
+            self.set_size_request(360, -1)
+            self.set_app_paintable(True)
+            visual = self.get_screen().get_rgba_visual()
+            if visual is not None:
+                self.set_visual(visual)
+
+            if GtkLayerShell is not None and GtkLayerShell.is_supported():
+                GtkLayerShell.init_for_window(self)
+                GtkLayerShell.set_layer(self, GtkLayerShell.Layer.OVERLAY)
+                GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.TOP, True)
+                GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.RIGHT, True)
+                GtkLayerShell.set_margin(self, GtkLayerShell.Edge.TOP, 8)
+                GtkLayerShell.set_margin(self, GtkLayerShell.Edge.RIGHT, 8)
+                GtkLayerShell.set_keyboard_mode(self, GtkLayerShell.KeyboardMode.ON_DEMAND)
+            else:
+                self.set_decorated(False)
+                self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
+
+            card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+            card.get_style_context().add_class("card")
+            self.add(card)
+
+            # header: title + percentage
+            header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            title = Gtk.Label(label="Sound", xalign=0)
+            title.get_style_context().add_class("title")
+            self.pct = Gtk.Label(label="--", xalign=1)
+            self.pct.get_style_context().add_class("pct")
+            header.pack_start(title, True, True, 0)
+            header.pack_end(self.pct, False, False, 0)
+
+            # the slider
+            self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
+            self.scale.set_draw_value(False)
+            self.scale.set_increments(5, 10)
+            self.scale.set_hexpand(True)
+            self.scale.connect("value-changed", self.on_scale_changed)
+            self.scale.connect("button-press-event", self.on_press)
+            self.scale.connect("button-release-event", self.on_release)
+
+            panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+            panel.get_style_context().add_class("panel")
+            panel.pack_start(header, False, False, 0)
+            panel.pack_start(self.scale, False, False, 0)
+            card.pack_start(panel, False, False, 0)
+
+            # output devices
+            self.devices = Gtk.ListBox()
+            self.devices.set_selection_mode(Gtk.SelectionMode.NONE)
+            self.devices.connect("row-activated", self.on_device_clicked)
+            card.pack_start(self.devices, False, False, 0)
+
+            # mute + settings
+            self.mute_btn = self.make_button("Mute", self.on_mute_clicked)
+            settings_btn = self.make_button("Sound settings", self.on_settings_clicked)
+            card.pack_start(self.mute_btn, False, False, 0)
+            card.pack_start(settings_btn, False, False, 0)
+
+            self.connect("key-press-event", self.on_key)
+            self.connect("notify::is-active", self.on_active_changed)
+            self.connect("destroy", lambda *_: self.quit())
+
+            self.refresh()
+            self.start_watcher()
+
+        # ------------------------------------------------------------ builders --
+
+        def make_button(self, text, handler):
+            btn = Gtk.Button()
+            label = Gtk.Label(label=text, xalign=0)
+            btn.add(label)
+            btn.set_relief(Gtk.ReliefStyle.NONE)
+            btn.get_style_context().add_class("row")
+            btn.connect("clicked", handler)
+            btn.label = label
+            return btn
+
+        def rebuild_devices(self, sinks, current):
+            for child in self.devices.get_children():
+                self.devices.remove(child)
+            for sink_id, name in sinks:
+                is_current = sink_id == current
+                row = Gtk.ListBoxRow()
+                row.sink_id = sink_id
+                label = Gtk.Label(label=("●  " if is_current else "○  ") + name, xalign=0)
+                label.set_ellipsize(3)  # Pango.EllipsizeMode.END
+                row.add(label)
+                row.get_style_context().add_class("row")
+                if is_current:
+                    row.get_style_context().add_class("current")
+                self.devices.add(row)
+            self.devices.show_all()
+
+        # ------------------------------------------------------------- state ----
+
+        def refresh(self):
+            vol, muted = get_volume()
+            self.muted = muted
+            recently_touched = time.monotonic() - self.last_user_change < 0.4
+            if not self.dragging and not recently_touched:
+                self.updating = True
+                self.scale.set_value(min(vol, 100))
+                self.updating = False
+                self.pct.set_text("Muted" if muted else "%d%%" % vol)
+            self.mute_btn.label.set_text("Unmute" if muted else "Mute")
+            self.rebuild_devices(get_sinks(), get_default_sink_id())
+            return False
+
+        def schedule_refresh(self):
+            if self.refresh_id is None:
+                self.refresh_id = GLib.timeout_add(150, self.do_scheduled_refresh)
+
+        def do_scheduled_refresh(self):
+            self.refresh_id = None
+            return self.refresh()
+
+        # ----------------------------------------------------------- slider -----
+
+        def on_scale_changed(self, scale):
+            if self.updating:
+                return
+            self.pending = int(round(scale.get_value()))
+            self.last_user_change = time.monotonic()
+            self.pct.set_text("%d%%" % self.pending)
+            if self.flush_id is None:
+                self.flush_id = GLib.timeout_add(40, self.flush)
+
+        def flush(self):
+            self.flush_id = None
+            if self.pending is None:
+                return False
+            value, self.pending = self.pending, None
+            if self.muted:
+                fire("wpctl", "set-mute", SINK, "0")
+                self.muted = False
+                self.mute_btn.label.set_text("Mute")
+            fire("wpctl", "set-volume", SINK, "%.2f" % (value / 100.0))
+            return False
+
+        def on_press(self, *_):
+            self.dragging = True
+            return False
+
+        def on_release(self, *_):
+            self.dragging = False
+            if self.flush_id is not None:
+                GLib.source_remove(self.flush_id)
+                self.flush_id = None
+            self.flush()
+            return False
+
+        # ----------------------------------------------------------- buttons ----
+
+        def on_device_clicked(self, _box, row):
+            fire("wpctl", "set-default", str(row.sink_id))
+            GLib.timeout_add(150, self.do_scheduled_refresh)
+
+        def on_mute_clicked(self, _btn):
+            fire("wpctl", "set-mute", SINK, "toggle")
+            GLib.timeout_add(150, self.do_scheduled_refresh)
+
+        def on_settings_clicked(self, _btn):
+            try:
+                subprocess.Popen(
+                    ["pavucontrol"],
+                    start_new_session=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            except OSError:
+                pass
+            self.quit()
+
+        # ---------------------------------------------------- window behaviour ---
+
+        def on_key(self, _w, event):
+            if event.keyval == Gdk.KEY_Escape:
+                self.quit()
+                return True
+            return False
+
+        def on_active_changed(self, *_):
+            if self.is_active():
+                self.was_active = True
+            elif self.was_active:
+                self.quit()
+
+        # ------------------------------------------------- device hotplug --------
+
+        def start_watcher(self):
+            try:
+                self.watcher = Gio.Subprocess.new(
+                    ["pactl", "subscribe"],
+                    Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE,
+                )
+            except GLib.Error:
+                return
+            self.stream = Gio.DataInputStream.new(self.watcher.get_stdout_pipe())
+            self.stream.read_line_async(GLib.PRIORITY_DEFAULT, None, self.on_event_line)
+
+        def on_event_line(self, stream, result):
+            try:
+                line, _length = stream.read_line_finish_utf8(result)
+            except GLib.Error:
+                return
+            if line is None:
+                return
+            if re.search(r" on (sink|card|server) ", line):
+                self.schedule_refresh()
+            stream.read_line_async(GLib.PRIORITY_DEFAULT, None, self.on_event_line)
+
+        def quit(self):
+            if self.watcher is not None:
+                self.watcher.force_exit()
+                self.watcher = None
+            try:
+                os.remove(PIDFILE)
+            except OSError:
+                pass
+            Gtk.main_quit()
+
+
+    def load_css():
+        path = os.environ.get("SOUND_HUB_CSS")
+        if not path:
+            return
+        provider = Gtk.CssProvider()
+        try:
+            provider.load_from_path(path)
+        except GLib.Error as err:
+            print("sound-hub: bad css: %s" % err, file=sys.stderr)
+            return
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+
+    def main():
+        if toggle_existing_instance():
+            return
+        with open(PIDFILE, "w") as f:
+            f.write(str(os.getpid()))
+        load_css()
+        hub = Hub()
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, hub.quit)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, hub.quit)
+        hub.show_all()
+        Gtk.main()
+
+
+    if __name__ == "__main__":
+        main()
   '';
 
-  colors = if theme == "dracula" then draculaColors else gruvboxColors;
+  pythonEnv = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
 
-  layout = ''
-    * {
-        font: "JetBrainsMono Nerd Font 13";
-        background-color: transparent;
-        text-color: @fg-col;
-    }
-    window {
-        location: northeast;
-        anchor: northeast;
-        x-offset: -8px;
-        y-offset: 40px;
-        width: 360px;
-        border: 2px;
-        border-color: @border-col;
-        border-radius: 12px;
-        background-color: @bg-col;
-    }
-    mainbox {
-        children: [ message, listview ];
-        padding: 12px;
-        spacing: 10px;
-        background-color: @bg-col;
-    }
-    message {
-        padding: 12px;
-        border-radius: 8px;
-        background-color: @panel;
-    }
-    textbox {
-        text-color: @fg-col;
-        background-color: transparent;
-    }
-    listview {
-        lines: 10;
-        columns: 1;
-        dynamic: true;
-        scrollbar: false;
-        spacing: 4px;
-        background-color: @bg-col;
-    }
-    element {
-        padding: 8px 10px;
-        border-radius: 8px;
-        background-color: @bg-col;
-        text-color: @fg-col;
-    }
-    element selected {
-        background-color: @selected-col;
-        text-color: @sel-text;
-    }
-    element-text {
-        background-color: inherit;
-        text-color: inherit;
-    }
-  '';
+  sound-hub = pkgs.stdenv.mkDerivation {
+    pname = "sound-hub";
+    version = "2.0";
+    dontUnpack = true;
+    dontBuild = true;
 
-  sound-hub = pkgs.writeShellApplication {
-    name = "sound-hub";
-    runtimeInputs = [
-      pkgs.rofi
-      pkgs.wireplumber
-      pkgs.pipewire
-      pkgs.jq
-      pkgs.gawk
-      pkgs.procps
-      pkgs.pavucontrol
-      pkgs.pulseaudio # pactl, for device plug/unplug events
+    nativeBuildInputs = [
+      pkgs.wrapGAppsHook3
+      pkgs.gobject-introspection
     ];
-    text = ''
-      theme="$HOME/.config/rofi/sound-hub.rasi"
-      flag="''${XDG_RUNTIME_DIR:-/tmp}/sound-hub-refresh"
-      step=5
+    buildInputs = [
+      pkgs.gtk3
+      pkgs.gtk-layer-shell
+      pkgs.glib
+    ];
 
-      # A second click on the bar closes the hub
-      if pgrep -f "rofi.*sound-hub.rasi" >/dev/null; then
-        pkill -f "rofi.*sound-hub.rasi"
-        exit 0
-      fi
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 ${script} $out/bin/sound-hub
+      sed -i '1c #!${pythonEnv}/bin/python3' $out/bin/sound-hub
+      runHook postInstall
+    '';
 
-      # When an output device is plugged/unplugged, restart rofi so the list refreshes
-      watch_devices() {
-        pactl subscribe | while read -r line; do
-          case "$line" in
-            *"'new' on sink "*|*"'remove' on sink "*|*" on card "*)
-              touch "$flag"
-              pkill -f "rofi.*sound-hub.rasi" || true
-              ;;
-          esac
-        done
-      }
-      watch_devices &
-      watcher=$!
-      cleanup() {
-        pkill -P "$watcher" 2>/dev/null || true
-        kill "$watcher" 2>/dev/null || true
-        rm -f "$flag"
-      }
-      trap cleanup EXIT
-
-      keep=""
-
-      while true; do
-        rm -f "$flag"
-
-        vol_line=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-        pct=$(awk '{ printf "%d", $2 * 100 }' <<<"$vol_line")
-        muted=false
-        if [[ "$vol_line" == *MUTED* ]]; then muted=true; fi
-
-        if $muted; then state="Muted"; else state="$pct%"; fi
-
-        filled=$(( pct > 100 ? 20 : pct * 20 / 100 ))
-        bar=""
-        for ((i = 0; i < 20; i++)); do
-          if (( i < filled )); then bar+="█"; else bar+="░"; fi
-        done
-
-        current=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | awk 'NR == 1 { gsub(",", "", $2); print $2 }')
-
-        sel=0
-        ids=()
-        entries=()
-        while IFS=$'\t' read -r id desc; do
-          if [[ "$id" == "$current" ]]; then
-            sel=''${#ids[@]}
-            entries+=("●  $desc")
-          else
-            entries+=("○  $desc")
-          fi
-          ids+=("$id")
-        done < <(pw-dump | jq -r '.[] | select(.type == "PipeWire:Interface:Node") | select(.info.props["media.class"] == "Audio/Sink") | "\(.id)\t\(.info.props["node.description"] // .info.props["node.name"])"')
-
-        # After a volume/mute action, keep the highlight on the row that was used
-        if [[ -n "$keep" ]]; then sel=$keep; keep=""; fi
-
-        entries+=("+  Volume up")
-        entries+=("−  Volume down")
-        if $muted; then entries+=("   Unmute"); else entries+=("   Mute"); fi
-        entries+=("   Sound settings")
-
-        mesg="<b>Sound</b>   $state"$'\n'"$bar"$'\n'"<span size=\"small\">←/→ volume   click a row</span>"
-
-        rc=0
-        choice=$(printf '%s\n' "''${entries[@]}" | rofi -dmenu -i -format i -p "" \
-          -theme "$theme" \
-          -mesg "$mesg" \
-          -selected-row "$sel" \
-          -me-select-entry "" \
-          -me-accept-entry "MousePrimary" \
-          -kb-move-char-back "Control+b" \
-          -kb-move-char-forward "Control+f" \
-          -kb-custom-1 "Left" \
-          -kb-custom-2 "Right") || rc=$?
-
-        # Device list changed while the menu was open: rebuild it
-        if [[ -e "$flag" && "$rc" -ne 0 && "$rc" -ne 10 && "$rc" -ne 11 ]]; then
-          continue
-        fi
-
-        case "$rc" in
-          0)
-            n=''${#ids[@]}
-            if (( choice < n )); then
-              wpctl set-default "''${ids[$choice]}"
-            elif (( choice == n )); then
-              wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
-              wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "$step%+"
-              keep=$choice
-            elif (( choice == n + 1 )); then
-              wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
-              wpctl set-volume @DEFAULT_AUDIO_SINK@ "$step%-"
-              keep=$choice
-            elif (( choice == n + 2 )); then
-              wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-              keep=$choice
-            else
-              setsid -f pavucontrol >/dev/null 2>&1
-              exit 0
-            fi
-            ;;
-          10)
-            wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
-            wpctl set-volume @DEFAULT_AUDIO_SINK@ "$step%-"
-            if [[ "$choice" =~ ^[0-9]+$ ]]; then keep=$choice; fi
-            ;;
-          11)
-            wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
-            wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "$step%+"
-            if [[ "$choice" =~ ^[0-9]+$ ]]; then keep=$choice; fi
-            ;;
-          *)
-            exit 0
-            ;;
-        esac
-      done
+    preFixup = ''
+      gappsWrapperArgs+=(
+        --prefix PATH : ${
+          lib.makeBinPath [
+            pkgs.wireplumber
+            pkgs.pipewire
+            pkgs.pulseaudio
+            pkgs.pavucontrol
+          ]
+        }
+        --prefix LD_PRELOAD : ${pkgs.gtk-layer-shell}/lib/libgtk-layer-shell.so
+        --set SOUND_HUB_CSS ${css}
+      )
     '';
   };
 in
 {
   home.packages = [ sound-hub ];
-
-  xdg.configFile."rofi/sound-hub.rasi".text = colors + layout;
 }
