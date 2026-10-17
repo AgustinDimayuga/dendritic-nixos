@@ -6,18 +6,21 @@
 }:
 
 let
+  testMode = false; # set to false when done testing
+  t = test: normal: if testMode then test else normal;
+
   baseListeners = [
     {
-      timeout = 180;
+      timeout = t 15 180;
       on-timeout = "brightnessctl -s set 10";
       on-resume = "brightnessctl -r";
     }
     {
-      timeout = 300;
+      timeout = t 30 300;
       on-timeout = "loginctl lock-session";
     }
     {
-      timeout = 330;
+      timeout = t 35 330;
       on-timeout = "hyprctl dispatch dpms off";
       on-resume = "hyprctl dispatch dpms on && brightnessctl -r";
     }
@@ -25,7 +28,7 @@ let
 
   laptopListeners = [
     {
-      timeout = 360;
+      timeout = t 45 360;
       on-timeout = "systemctl suspend-then-hibernate";
     }
   ];
