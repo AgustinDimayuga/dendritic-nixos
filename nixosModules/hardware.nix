@@ -18,6 +18,8 @@
       services.auto-cpufreq.enable = true;
       hardware.enableAllFirmware = true;
 
+      services.fprintd.enable = true;
+
       services.libinput = {
         enable = true;
         touchpad = {

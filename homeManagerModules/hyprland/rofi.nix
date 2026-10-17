@@ -46,6 +46,10 @@ let
         show-icons: true;
         terminal: "alacritty";
         drun-display-format: "{icon} {name}";
+        drun-match-fields: "name,generic,keywords";
+        matching: "fuzzy";
+        sort: true;
+        sorting-method: "fzf";
         location: 0;
         disable-history: false;
         hide-scrollbar: true;
