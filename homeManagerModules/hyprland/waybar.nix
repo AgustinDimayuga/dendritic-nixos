@@ -598,7 +598,7 @@ in
           "on-scroll-down" = "volume.sh --inc";
           "smooth-scrolling-threshold" = 5;
           tooltip = false;
-          "on-click" = "volume.sh --toggle";
+          "on-click" = "sound-hub";
           "on-click-right" = "pavucontrol";
         };
 

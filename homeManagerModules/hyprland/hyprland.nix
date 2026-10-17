@@ -9,6 +9,7 @@
     ./hyprland-display.nix
     ./look-and-feel.nix
     ./keybinds.nix
+    ./sound-hub.nix
     ./input.nix
     ./misc.nix
     ./cursor.nix
