@@ -20,8 +20,9 @@ in
           size = 12;
         };
         settings = {
-          background_opacity = 1;
+          background_opacity = .95;
           sync_to_monitor = true;
+          window_padding_width = 25;
         };
         keybindings = {
           "ctrl+c" = "copy_or_interrupt";
