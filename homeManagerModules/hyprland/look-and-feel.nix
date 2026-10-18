@@ -211,7 +211,7 @@ in
     (lib.mkIf (theme == "dracula") {
       wayland.windowManager.hyprland.settings.config.general = {
         col = {
-          active_border = "rgb(ff79c6)";
+          active_border = "rgb(8be9fd)";
           inactive_border = "rgb(44475a)";
         };
       };
