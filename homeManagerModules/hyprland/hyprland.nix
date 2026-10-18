@@ -13,6 +13,7 @@
     ./brightness-hub.nix
     ./bluetooth-hub.nix
     ./input.nix
+    ./osd.nix
     ./misc.nix
     ./cursor.nix
     ./waybar.nix
@@ -24,4 +25,5 @@
     ./hypridle.nix
     ./clamshell.nix
   ];
+
 }

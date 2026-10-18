@@ -1,0 +1,601 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
+  theme = config.theme;
+
+  # Same palettes as the hubs. `volume` and `brightness` match each hub's accent.
+  palettes = {
+    dracula = {
+      bg = "#282a36";
+      panel = "#44475a";
+      border = "#f8f8f2";
+      fg = "#f8f8f2";
+      volume = "#8be9fd";
+      brightness = "#f1fa8c";
+      dim = "#6272a4";
+    };
+    gruvbox = {
+      bg = "#282828";
+      panel = "#3c3836";
+      border = "#ebdbb2";
+      fg = "#ebdbb2";
+      volume = "#fabd2f";
+      brightness = "#fe8019";
+      dim = "#928374";
+    };
+  };
+  p = palettes.${theme};
+
+  css = pkgs.writeText "osd.css" ''
+    * {
+      font-family: "JetBrainsMono Nerd Font";
+      font-size: 13pt;
+      color: ${p.fg};
+    }
+    window, window.background {
+      background: transparent;
+    }
+    .card {
+      background: ${p.bg};
+      border: 2px solid ${p.border};
+      border-radius: 16px;
+      padding: 12px 20px;
+    }
+    .icon {
+      font-size: 20pt;
+    }
+    .card.volume .icon,
+    .card.volume .pct {
+      color: ${p.volume};
+    }
+    .card.brightness .icon,
+    .card.brightness .pct {
+      color: ${p.brightness};
+    }
+    scale trough {
+      min-height: 8px;
+      background: ${p.panel};
+      border: none;
+      border-radius: 4px;
+    }
+    scale highlight {
+      border: none;
+      border-radius: 4px;
+    }
+    .card.volume highlight {
+      background: ${p.volume};
+    }
+    .card.brightness highlight {
+      background: ${p.brightness};
+    }
+    .card.muted highlight {
+      background: ${p.dim};
+    }
+    scale slider {
+      background: ${p.fg};
+      min-width: 18px;
+      min-height: 18px;
+      margin: -5px;
+      border: none;
+      border-radius: 9px;
+      box-shadow: none;
+      opacity: 0;
+    }
+    scale:hover slider,
+    scale:active slider {
+      opacity: 1;
+    }
+    .card.muted .icon,
+    .card.muted .pct {
+      color: ${p.dim};
+    }
+  '';
+
+  script = pkgs.writeText "osd-daemon.py" ''
+    #!/usr/bin/env python3
+    """osd-daemon: bottom-centre volume / brightness popup, driven by the `osd` command."""
+
+    import os
+    import signal
+    import stat
+    import subprocess
+
+    # gtk-layer-shell must be preloaded (see the Nix wrapper). Drop it from the
+    # environment so the helper programs we spawn don't inherit it.
+    os.environ.pop("LD_PRELOAD", None)
+
+    import gi
+
+    gi.require_version("Gtk", "3.0")
+    gi.require_version("Gdk", "3.0")
+    from gi.repository import Gdk, Gio, GLib, Gtk
+
+    try:
+        gi.require_version("GtkLayerShell", "0.1")
+        from gi.repository import GtkLayerShell
+    except (ValueError, ImportError):
+        GtkLayerShell = None
+
+    RUNTIME = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
+    FIFO = os.path.join(RUNTIME, "osd.fifo")
+    PIDFILE = os.path.join(RUNTIME, "osd.pid")
+
+    HOLD_MS = 1200  # how long the popup stays fully visible
+    FADE_MS = 200  # fade-out time
+    BOTTOM_MARGIN = 64
+
+    ICON_MUTED = chr(0xF075F)
+    ICON_VOLUME = [chr(0xF057F), chr(0xF0580), chr(0xF057E)]  # low, medium, high
+    ICON_BRIGHTNESS = chr(0xF00E0)
+
+
+    # ---------------------------------------------------------------- state -----
+
+
+    def run(*argv):
+        try:
+            return subprocess.run(argv, capture_output=True, text=True, timeout=2).stdout
+        except (OSError, subprocess.SubprocessError):
+            return ""
+
+
+    def fire(*argv):
+        """Start a command and don't wait for it."""
+        try:
+            Gio.Subprocess.new(
+                list(argv),
+                Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE,
+            )
+        except GLib.Error:
+            pass
+
+
+    def read_volume():
+        """Returns (percent, muted) or None. wpctl prints "Volume: 0.45 [MUTED]"."""
+        words = run("wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@").split()
+        try:
+            return int(round(float(words[1]) * 100)), "[MUTED]" in words
+        except (IndexError, ValueError):
+            return None
+
+
+    def read_brightness():
+        """Returns percent or None. Linear, like waybar's backlight module."""
+        # machine-readable: name,class,current,percent%,max
+        parts = run("brightnessctl", "-m").strip().split(",")
+        if len(parts) >= 5:
+            try:
+                return int(parts[3].rstrip("%"))
+            except ValueError:
+                pass
+        return None
+
+
+    # ------------------------------------------------------------------- UI -----
+
+
+    class Osd(Gtk.Window):
+        def __init__(self):
+            super().__init__(title="osd")
+            self.hide_id = None
+            self.fade_id = None
+            self.fade_step = 0
+            self.flush_id = None
+            self.pending = None
+            self.updating = False
+            self.dragging = False
+            self.kind = "volume"
+            self.muted = False
+
+            self.set_resizable(False)
+            self.set_app_paintable(True)
+            self.set_accept_focus(False)
+            self.set_focus_on_map(False)
+            self.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+            visual = self.get_screen().get_rgba_visual()
+            if visual is not None:
+                self.set_visual(visual)
+
+            self.layer_shell = GtkLayerShell is not None and GtkLayerShell.is_supported()
+            if self.layer_shell:
+                GtkLayerShell.init_for_window(self)
+                GtkLayerShell.set_namespace(self, "osd")
+                GtkLayerShell.set_layer(self, GtkLayerShell.Layer.OVERLAY)
+                # anchoring only the bottom edge centres it horizontally
+                GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.BOTTOM, True)
+                GtkLayerShell.set_margin(self, GtkLayerShell.Edge.BOTTOM, BOTTOM_MARGIN)
+                GtkLayerShell.set_keyboard_mode(self, GtkLayerShell.KeyboardMode.NONE)
+            else:
+                self.set_decorated(False)
+                self.set_skip_taskbar_hint(True)
+                self.set_keep_above(True)
+                self.set_type_hint(Gdk.WindowTypeHint.NOTIFICATION)
+
+            self.card = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
+            self.card.get_style_context().add_class("card")
+            self.add(self.card)
+
+            self.icon = Gtk.Label(label="")
+            self.icon.get_style_context().add_class("icon")
+            self.icon.set_width_chars(2)
+
+            # a real slider: drag it, click on it, or scroll over it
+            self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
+            self.scale.set_draw_value(False)
+            self.scale.set_can_focus(False)
+            self.scale.set_increments(2, 10)
+            self.scale.set_size_request(220, -1)
+            self.scale.set_valign(Gtk.Align.CENTER)
+            self.scale.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+            self.scale.connect("value-changed", self.on_scale_changed)
+            self.scale.connect("button-press-event", self.on_press)
+            self.scale.connect("button-release-event", self.on_release)
+            self.scale.connect("motion-notify-event", self.on_motion)
+            self.connect("motion-notify-event", self.on_motion)
+
+            self.pct = Gtk.Label(label="", xalign=1)
+            self.pct.get_style_context().add_class("pct")
+            self.pct.set_width_chars(5)
+
+            self.card.pack_start(self.icon, False, False, 0)
+            self.card.pack_start(self.scale, True, True, 0)
+            self.card.pack_start(self.pct, False, False, 0)
+
+        def reposition(self):
+            """Bottom-centre placement for compositors without layer-shell."""
+            if self.layer_shell:
+                return
+            display = Gdk.Display.get_default()
+            monitor = display.get_primary_monitor() or display.get_monitor(0)
+            area = monitor.get_geometry()
+            width, height = self.get_size()
+            self.move(
+                area.x + (area.width - width) // 2,
+                area.y + area.height - height - BOTTOM_MARGIN,
+            )
+
+        # -------------------------------------------------- showing a value ----
+
+        def render(self, kind, percent, muted):
+            context = self.card.get_style_context()
+            for name in ("volume", "brightness", "muted"):
+                context.remove_class(name)
+            context.add_class(kind)
+            if muted:
+                context.add_class("muted")
+
+            if kind == "volume":
+                if muted or percent <= 0:
+                    icon = ICON_MUTED
+                else:
+                    icon = ICON_VOLUME[0 if percent < 34 else 1 if percent < 67 else 2]
+            else:
+                icon = ICON_BRIGHTNESS
+
+            self.icon.set_text(icon)
+            self.pct.set_text("Muted" if muted else "%d%%" % percent)
+
+        def present_value(self, kind, percent, muted=False):
+            if self.dragging:
+                return  # the user is driving the slider, don't fight them
+            self.kind = kind
+            self.muted = muted
+            self.render(kind, percent, muted)
+            self.updating = True
+            # the display never goes fully black from the slider
+            self.scale.set_range(1 if kind == "brightness" else 0, 100)
+            self.scale.set_value(max(0, min(percent, 100)))
+            self.updating = False
+            self.reveal()
+
+        def update(self, kind):
+            if kind == "volume":
+                state = read_volume()
+                if state is not None:
+                    self.present_value("volume", state[0], state[1])
+            elif kind == "brightness":
+                value = read_brightness()
+                if value is not None:
+                    self.present_value("brightness", value)
+
+        # ------------------------------------------------- using the slider ----
+
+        def on_scale_changed(self, scale):
+            if self.updating:
+                return
+            value = int(round(scale.get_value()))
+            if self.kind == "volume" and self.muted:
+                # moving the slider unmutes, like the volume popup
+                self.muted = False
+                fire("wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "0")
+            self.render(self.kind, value, self.muted)
+            self.pending = value
+            if self.flush_id is None:
+                self.flush_id = GLib.timeout_add(40, self.flush)
+            self.keep_open()
+
+        def flush(self):
+            self.flush_id = None
+            value, self.pending = self.pending, None
+            if value is None:
+                return False
+            if self.kind == "volume":
+                fire("wpctl", "set-volume", "-l", "1", "@DEFAULT_AUDIO_SINK@", "%d%%" % value)
+            else:
+                fire("brightnessctl", "-q", "set", "%d%%" % value)
+            return False
+
+        def on_press(self, *_):
+            self.dragging = True
+            self.cancel_timers()
+            self.set_opacity(1.0)
+            return False
+
+        def on_release(self, *_):
+            self.dragging = False
+            if self.flush_id is not None:
+                GLib.source_remove(self.flush_id)
+                self.flush_id = None
+            self.flush()
+            self.hold()
+            return False
+
+        def on_motion(self, *_):
+            if self.get_visible() and not self.dragging:
+                self.keep_open()
+            return False
+
+        def keep_open(self):
+            """Any interaction pulls the popup back to full opacity and restarts the timer."""
+            self.cancel_timers()
+            self.set_opacity(1.0)
+            if not self.dragging:
+                self.hold()
+
+        # --------------------------------------------------- show / hide timers --
+
+        def reveal(self):
+            self.cancel_timers()
+            self.set_opacity(1.0)
+            if not self.get_visible():
+                self.show_all()
+            self.reposition()
+            self.hold()
+
+        def hold(self):
+            self.cancel_timers()
+            self.hide_id = GLib.timeout_add(HOLD_MS, self.start_fade)
+
+        def cancel_timers(self):
+            for attr in ("hide_id", "fade_id"):
+                source = getattr(self, attr)
+                if source is not None:
+                    GLib.source_remove(source)
+                    setattr(self, attr, None)
+
+        def start_fade(self):
+            self.hide_id = None
+            if self.dragging:
+                return False
+            self.fade_step = 0
+            self.fade_id = GLib.timeout_add(16, self.fade)
+            return False
+
+        def fade(self):
+            self.fade_step += 1
+            opacity = 1.0 - (self.fade_step * 16.0) / FADE_MS
+            if opacity <= 0:
+                self.fade_id = None
+                self.hide()
+                return False
+            self.set_opacity(opacity)
+            return True
+
+
+    # ----------------------------------------------------------- plumbing -------
+
+
+    def already_running():
+        try:
+            with open(PIDFILE) as f:
+                pid = int(f.read().strip())
+            with open("/proc/%d/cmdline" % pid, "rb") as f:
+                cmdline = f.read()
+            return pid != os.getpid() and b"osd-daemon" in cmdline
+        except (OSError, ValueError):
+            return False
+
+
+    def open_fifo():
+        """The `osd` command writes one line per event into this pipe."""
+        try:
+            if os.path.exists(FIFO) and not stat.S_ISFIFO(os.stat(FIFO).st_mode):
+                os.remove(FIFO)  # a stray regular file from before we were running
+            if not os.path.exists(FIFO):
+                os.mkfifo(FIFO, 0o600)
+        except OSError:
+            return None
+        # O_RDWR keeps the pipe open between writers, so we never see EOF
+        return os.open(FIFO, os.O_RDWR | os.O_NONBLOCK)
+
+
+    def load_css():
+        path = os.environ.get("OSD_CSS")
+        if not path:
+            return
+        provider = Gtk.CssProvider()
+        try:
+            provider.load_from_path(path)
+        except GLib.Error as err:
+            print("osd-daemon: bad css: %s" % err)
+            return
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+
+    def cleanup(*_):
+        for path in (PIDFILE, FIFO):
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+        Gtk.main_quit()
+
+
+    def main():
+        if already_running():
+            return
+        fd = open_fifo()
+        if fd is None:
+            print("osd-daemon: couldn't create %s" % FIFO)
+            return
+        with open(PIDFILE, "w") as f:
+            f.write(str(os.getpid()))
+
+        load_css()
+        osd = Osd()
+        pending = {"data": b""}
+
+        def on_readable(source, _condition):
+            try:
+                chunk = os.read(source, 4096)
+            except BlockingIOError:
+                return True
+            pending["data"] += chunk
+            *lines, pending["data"] = pending["data"].split(b"\n")
+            kinds = [line.decode(errors="ignore").strip() for line in lines]
+            kinds = [k for k in kinds if k in ("volume", "brightness")]
+            if kinds:
+                osd.update(kinds[-1])  # key repeat can queue many; show the latest
+            return True
+
+        GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN, on_readable)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, cleanup)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, cleanup)
+        Gtk.main()
+
+
+    if __name__ == "__main__":
+        main()
+  '';
+
+  pythonEnv = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
+
+  osd-daemon = pkgs.stdenv.mkDerivation {
+    pname = "osd-daemon";
+    version = "1.0";
+    dontUnpack = true;
+    dontBuild = true;
+
+    nativeBuildInputs = [
+      pkgs.wrapGAppsHook3
+      pkgs.gobject-introspection
+    ];
+    buildInputs = [
+      pkgs.gtk3
+      pkgs.gtk-layer-shell
+      pkgs.glib
+    ];
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 ${script} $out/bin/osd-daemon
+      sed -i '1c #!${pythonEnv}/bin/python3' $out/bin/osd-daemon
+      runHook postInstall
+    '';
+
+    preFixup = ''
+      gappsWrapperArgs+=(
+        --prefix PATH : ${
+          lib.makeBinPath [
+            pkgs.wireplumber
+            pkgs.brightnessctl
+          ]
+        }
+        --prefix LD_PRELOAD : ${pkgs.gtk-layer-shell}/lib/libgtk-layer-shell.so
+        --set OSD_CSS ${css}
+      )
+    '';
+  };
+
+  # The command the keybinds call: change the value, then tell the daemon to show it.
+  osd = pkgs.writeShellApplication {
+    name = "osd";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gnugrep
+      pkgs.util-linux
+      pkgs.wireplumber
+      pkgs.brightnessctl
+      osd-daemon
+    ];
+    text = ''
+      runtime="''${XDG_RUNTIME_DIR:-/tmp}"
+      fifo="$runtime/osd.fifo"
+      pidfile="$runtime/osd.pid"
+
+      # alive = the pidfile's process still exists AND is really osd-daemon
+      daemon_alive() {
+        [ -f "$pidfile" ] || return 1
+        grep -aq osd-daemon "/proc/$(cat "$pidfile")/cmdline" 2>/dev/null
+      }
+
+      notify() {
+        # start the daemon on demand if autostart didn't (or it crashed)
+        if ! daemon_alive; then
+          rm -f "$fifo"
+          setsid -f osd-daemon >/dev/null 2>&1
+          for _ in $(seq 1 60); do
+            [ -p "$fifo" ] && break
+            sleep 0.05
+          done
+        fi
+        printf '%s\n' "$1" 1<>"$fifo"
+      }
+
+      usage() {
+        echo "usage: osd volume up|down|mute | osd brightness up|down | osd show volume|brightness" >&2
+        exit 1
+      }
+
+      case "''${1:-}" in
+        volume)
+          case "''${2:-}" in
+            up) wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 1%+ ;;
+            down) wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%- ;;
+            mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+            *) usage ;;
+          esac
+          notify volume
+          ;;
+        brightness)
+          case "''${2:-}" in
+            up) brightnessctl -q -e4 -n2 set 1%+ ;;
+            down) brightnessctl -q -e4 -n2 set 1%- ;;
+            *) usage ;;
+          esac
+          notify brightness
+          ;;
+        show)
+          case "''${2:-}" in
+            volume | brightness) notify "$2" ;;
+            *) usage ;;
+          esac
+          ;;
+        *) usage ;;
+      esac
+    '';
+  };
+in
+{
+  home.packages = [
+    osd
+    osd-daemon
+  ];
+}

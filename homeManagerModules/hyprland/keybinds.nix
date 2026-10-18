@@ -85,25 +85,25 @@ in
       (bindOpts "SUPER + mouse:273" dsp.resize { mouse = true; })
 
       # Media/volume keys — folded in from old bindel/bindl
-      (bindOpts "XF86AudioRaiseVolume" (dsp.exec "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 1%+") {
+      (bindOpts "XF86AudioRaiseVolume" (dsp.exec "osd volume up") {
         locked = true;
         repeating = true;
       })
-      (bindOpts "XF86AudioLowerVolume" (dsp.exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-") {
+      (bindOpts "XF86AudioLowerVolume" (dsp.exec "osd volume down") {
         locked = true;
         repeating = true;
       })
-      (bindOpts "XF86AudioMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") {
+      (bindOpts "XF86AudioMute" (dsp.exec "osd volume mute") {
         locked = true;
       })
       (bindOpts "XF86AudioMicMute" (dsp.exec "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") {
         locked = true;
       })
-      (bindOpts "XF86MonBrightnessUp" (dsp.exec "brightnessctl -e4 -n2 set 1%+") {
+      (bindOpts "XF86MonBrightnessUp" (dsp.exec "osd brightness up") {
         locked = true;
         repeating = true;
       })
-      (bindOpts "XF86MonBrightnessDown" (dsp.exec "brightnessctl -e4 -n2 set 1%-") {
+      (bindOpts "XF86MonBrightnessDown" (dsp.exec "osd brightness down") {
         locked = true;
         repeating = true;
       })
