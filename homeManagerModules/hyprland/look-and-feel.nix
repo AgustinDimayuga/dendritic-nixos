@@ -59,6 +59,13 @@ in
             preserve_split = true;
           };
 
+          scrolling = {
+            column_width = 0.65;
+            focus_fit_method = 1;
+            explicit_column_widths = "0.65, 1.0";
+            fullscreen_on_one_column = true;
+          };
+
           master = {
             new_status = "master";
           };

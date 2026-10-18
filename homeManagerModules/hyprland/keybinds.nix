@@ -108,6 +108,16 @@ in
         repeating = true;
       })
 
+      (bind "SUPER + T" (lua ''
+        function()
+          scrolling_on = not scrolling_on
+          hl.config({ general = { layout = scrolling_on and "scrolling" or "dwindle" } })
+        end
+      ''))
+      (bind "SUPER + I" (lua ''hl.dsp.layout("consume_or_expel prev")''))
+      (bind "SUPER + SHIFT + I" (lua ''hl.dsp.layout("consume_or_expel next")''))
+      (bind "SUPER + R" (lua ''hl.dsp.layout("colresize +conf")''))
+
       (bindOpts "XF86AudioNext" (dsp.exec "playerctl next") { locked = true; })
       (bindOpts "XF86AudioPause" (dsp.exec "playerctl play-pause") { locked = true; })
       (bindOpts "XF86AudioPlay" (dsp.exec "playerctl play-pause") { locked = true; })
