@@ -25,23 +25,30 @@ in
           };
 
           decoration = {
-            rounding = 10;
-            rounding_power = 2;
+            rounding = 20;
+            rounding_power = 7;
             active_opacity = 1.0;
             inactive_opacity = 1.0;
 
             shadow = {
               enabled = true;
-              range = 4;
-              render_power = 3;
+              range = 20;
+              render_power = 30;
               color = "rgb(1B1B1B)";
             };
 
             blur = {
               enabled = true;
-              size = 1;
-              passes = 3;
-              vibrancy = 0.1696;
+              brightness = 0.8;
+              contrast = 2;
+              noise = 0;
+              vibrancy = 0.35;
+              vibrancy_darkness = 0.35;
+
+              size = 13;
+              passes = 2;
+              new_optimizations = true;
+              special = false;
             };
           };
 
@@ -211,8 +218,8 @@ in
     (lib.mkIf (theme == "dracula") {
       wayland.windowManager.hyprland.settings.config.general = {
         col = {
-          active_border = "rgb(8be9fd)";
-          inactive_border = "rgb(44475a)";
+          active_border = "rgb(45403d)";
+          inactive_border = "rgba(45403d99)";
         };
       };
     })
