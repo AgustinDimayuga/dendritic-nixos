@@ -20,7 +20,7 @@ in
           size = 12;
         };
         settings = {
-          background_opacity = .95;
+          background_opacity = .80;
           sync_to_monitor = true;
           window_padding_width = 25;
         };
