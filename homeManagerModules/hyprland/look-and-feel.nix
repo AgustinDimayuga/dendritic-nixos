@@ -268,5 +268,18 @@ in
       };
     })
 
+    # Catppuccin Macchiato theme — border colors
+    (lib.mkIf (theme == "catppuccin-macchiato") {
+      wayland.windowManager.hyprland.settings.config.general = {
+        col = {
+          # active_border = "rgb(b7bdf8)";
+          # inactive_border = "rgba(6e738d99)";
+
+          active_border = "rgb(45403d)";
+          inactive_border = "rgba(45403d99)";
+        };
+      };
+    })
+
   ];
 }

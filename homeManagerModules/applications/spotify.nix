@@ -6,7 +6,13 @@
 }:
 let
   theme = config.theme;
-  colorScheme = if theme == "dracula" then "dracula" else "gruvbox-material-dark";
+  colorScheme =
+    if theme == "dracula" then
+      "dracula"
+    else if theme == "catppuccin-macchiato" then
+      "catppuccin-macchiato"
+    else
+      "gruvbox-material-dark";
 in
 {
   programs.spicetify = {

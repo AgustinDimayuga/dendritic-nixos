@@ -11,6 +11,7 @@ let
   wallpaperFile = {
     dracula = ../assets/wallpapers/nixos.png;
     gruvbox = ../assets/wallpapers/gruvbox-dark-blue.png;
+    catppuccin-macchiato = ../assets/wallpapers/catppuccin.png;
   };
 
   wallpaper = toString wallpaperFile.${theme};
@@ -35,7 +36,23 @@ let
     fail = "rgba(cc241dff)";
   };
 
-  c = if theme == "dracula" then draculaColors else gruvboxColors;
+  catppuccinColors = {
+    label = "rgba(cad3f5ff)";
+    labelDim = "rgba(a5adcbff)";
+    outer = "rgba(b7bdf8ff)";
+    inner = "rgba(24273aff)";
+    font = "rgba(cad3f5ff)";
+    check = "rgba(a6da95ff)";
+    fail = "rgba(ed8796ff)";
+  };
+
+  c =
+    if theme == "dracula" then
+      draculaColors
+    else if theme == "catppuccin-macchiato" then
+      catppuccinColors
+    else
+      gruvboxColors;
 in
 {
   programs.hyprlock = {
@@ -72,7 +89,7 @@ in
           text = "$TIME";
           color = c.label;
           font_size = 110;
-          font_family = "CaskaydiaCove Nerd Font";
+          font_family = "MonoLisaText Trial";
           position = "0, -200";
           halign = "center";
           valign = "center";
@@ -82,7 +99,7 @@ in
           text = "$LAYOUT";
           color = c.labelDim;
           font_size = 16;
-          font_family = "CaskaydiaCove Nerd Font";
+          font_family = "MonoLisaText Trial";
           position = "0, 320";
           halign = "center";
           valign = "center";

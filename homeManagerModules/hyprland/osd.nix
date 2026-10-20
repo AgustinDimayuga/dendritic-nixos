@@ -28,12 +28,21 @@ let
       brightness = "#fe8019";
       dim = "#928374";
     };
+    catppuccin-macchiato = {
+      bg = "#24273a";
+      panel = "#494d64";
+      border = "#cad3f5";
+      fg = "#cad3f5";
+      volume = "#91d7e3";
+      brightness = "#eed49f";
+      dim = "#8087a2";
+    };
   };
   p = palettes.${theme};
 
   css = pkgs.writeText "osd.css" ''
     * {
-      font-family: "JetBrainsMono Nerd Font";
+      font-family: "MonoLisaText Trial";
       font-size: 13pt;
       color: ${p.fg};
     }

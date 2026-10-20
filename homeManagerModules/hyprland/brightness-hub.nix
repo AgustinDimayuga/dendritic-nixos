@@ -25,12 +25,20 @@ let
       fg = "#ebdbb2";
       accent = "#fe8019";
     };
+    catppuccin-macchiato = {
+      bg = "#24273a";
+      panel = "#494d64";
+      border = "#cad3f5";
+      selBg = "#494d64";
+      fg = "#cad3f5";
+      accent = "#eed49f";
+    };
   };
   p = palettes.${theme};
 
   css = pkgs.writeText "brightness-hub.css" ''
     * {
-      font-family: "JetBrainsMono Nerd Font";
+      font-family: "MonoLisaText Trial";
       font-size: 13pt;
       color: ${p.fg};
     }

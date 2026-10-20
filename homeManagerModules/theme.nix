@@ -13,6 +13,7 @@ in
     type = lib.types.enum [
       "dracula"
       "gruvbox"
+      "catppuccin-macchiato"
     ];
     default = "dracula";
     description = "Global color theme applied across all themed apps.";
@@ -28,10 +29,18 @@ in
             package = pkgs.dracula-theme;
             name = "Dracula";
           }
-        else
+        else if theme == "gruvbox" then
           {
             package = pkgs.gruvbox-gtk-theme;
-            name = "Gruvbox";
+            name = "Gruvbox-Dark";
+          }
+        else
+          {
+            package = pkgs.catppuccin-gtk.override {
+              variant = "macchiato";
+              accents = [ "mauve" ];
+            };
+            name = "catppuccin-macchiato-mauve-standard";
           };
 
       iconTheme =
@@ -40,10 +49,18 @@ in
             package = pkgs.dracula-icon-theme;
             name = "Dracula";
           }
-        else
+        else if theme == "gruvbox" then
           {
             package = pkgs.gruvbox-dark-icons-gtk;
             name = "Gruvbox-Dark";
+          }
+        else
+          {
+            package = pkgs.catppuccin-papirus-folders.override {
+              flavor = "macchiato";
+              accent = "mauve";
+            };
+            name = "Papirus-Dark";
           };
     };
   };

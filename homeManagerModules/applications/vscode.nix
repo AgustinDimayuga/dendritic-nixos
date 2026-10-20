@@ -46,6 +46,25 @@ let
         "editor.lineHighlightBackground" = "#ffffff0a";
       };
     };
+    catppuccin-macchiato = {
+      colorTheme = "Catppuccin Macchiato";
+      extension = pkgs.open-vsx.catppuccin.catppuccin-vsc;
+      colors = {
+        "editor.background" = "#24273a";
+        "sideBar.background" = "#1e2030";
+        "panel.background" = "#1e2030";
+        "terminal.background" = "#24273a";
+        "editorGroupHeader.tabsBackground" = "#181926";
+        "tab.activeBackground" = "#24273a";
+        "tab.inactiveBackground" = "#181926";
+        "tab.border" = "#00000000";
+        "tab.activeBorder" = "#00000000";
+        "tab.activeBorderTop" = "#c6a0f6";
+        "editorGroup.border" = "#00000000";
+        "editorLineNumber.foreground" = "#8087a2";
+        "editor.lineHighlightBackground" = "#ffffff0a";
+      };
+    };
   };
 
   current = themeSettings.${theme};
@@ -271,7 +290,30 @@ in
       }
       // prettierFormatters;
       # caps lock (remapped to esc in hyprland) -> escape inside vscodium
+      # esc / caps lock: close suggestions AND leave insert mode in one press
       keybindings = [
+        {
+          key = "escape";
+          command = "runCommands";
+          args = {
+            commands = [
+              "hideSuggestWidget"
+              "extension.vim_escape"
+            ];
+          };
+          when = "editorTextFocus && vim.active && suggestWidgetVisible && !inDebugRepl";
+        }
+        {
+          key = "capslock";
+          command = "runCommands";
+          args = {
+            commands = [
+              "hideSuggestWidget"
+              "extension.vim_escape"
+            ];
+          };
+          when = "editorTextFocus && vim.active && suggestWidgetVisible && !inDebugRepl";
+        }
         {
           key = "capslock";
           command = "extension.vim_escape";
@@ -281,11 +323,6 @@ in
           key = "capslock";
           command = "workbench.action.closeQuickOpen";
           when = "inQuickOpen";
-        }
-        {
-          key = "capslock";
-          command = "hideSuggestWidget";
-          when = "suggestWidgetVisible && textInputFocus";
         }
       ];
     };

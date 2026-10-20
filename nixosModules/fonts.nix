@@ -8,7 +8,15 @@
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
-      monospace = [ "JetBrainsMono Nerd Font" ];
+      sansSerif = [
+        "MonoLisaText Trial"
+        "DejaVu Sans"
+      ];
+      serif = [
+        "MonoLisaText Trial"
+        "DejaVu Serif"
+      ];
+      monospace = [ "MonoLisa Variable" ];
     };
   };
 }

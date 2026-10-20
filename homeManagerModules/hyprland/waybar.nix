@@ -17,7 +17,7 @@ let
     * {
       border: none;
       border-radius: 0px;
-      font-family: MonoLisa Variable;
+      font-family: MonoLisaText Trial;
       font-weight: bold;
       font-size: 15px;
       min-height: 0;
@@ -291,7 +291,7 @@ let
     * {
       border: none;
       border-radius: 0px;
-      font-family: JetBrainsMono Nerd Font;
+      font-family: MonoLisaText Trial;
       font-weight: bold;
       font-size: 15px;
       min-height: 0;
@@ -528,6 +528,280 @@ let
       background: #427b58;
     }
   '';
+
+  catppuccinStyle = ''
+    * {
+      border: none;
+      border-radius: 0px;
+      font-family: MonoLisaText Trial;
+      font-weight: bold;
+      font-size: 15px;
+      min-height: 0;
+    }
+
+    #connectivity {
+        background: #494d64;
+        margin: 4px 6px 4px 4px;
+        border-radius: 6px;
+      }
+
+    #connectivity #tray,
+    #connectivity #bluetooth {
+        background: transparent;
+        margin: 0;
+        padding: 0 0.5em;
+      }
+
+    #bluetooth.off,
+    #bluetooth.disabled {
+        color: #8087a2;
+      }
+
+    #bluetooth.connected {
+        color: #91d7e3;
+      }
+
+    #custom-calcurse {
+      background: #494d64;
+      color: #cad3f5;
+      padding: 0 0.6em;
+      margin: 4px;
+      border-radius: 6px;
+    }
+
+    window#waybar {
+      background: #24273a;
+      color: #cad3f5;
+    }
+
+    tooltip {
+      background: #1e2030;
+      border-radius: 10px;
+      border-width: 2px;
+      border-style: solid;
+      border-color: #24273a;
+    }
+
+    #workspaces button {
+      padding: 0 0.4em;
+      color: #8087a2;
+      border-radius: 6px;
+      margin-right: 2px;
+      margin-left: 2px;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    #workspaces button.active {
+      color: #cad3f5;
+      background: #494d64;
+    }
+
+    #workspaces button.focused {
+      color: #cad3f5;
+      background: #494d64;
+    }
+
+    #workspaces button.urgent {
+      color: #24273a;
+      background: #ed8796;
+    }
+
+    #workspaces button:hover {
+      background: #363a4f;
+      color: #c6a0f6;
+    }
+
+    #custom-power,
+    #date,
+    #backlight,
+    #idle_inhibitor,
+    #pulseaudio,
+    #network,
+    #workspaces,
+    #mpd,
+    #temperature,
+    #clock,
+    #tray,
+    #battery {
+      background: #494d64;
+      padding: 0 0.5em;
+      margin-right: 4px;
+      margin-left: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+    }
+
+    #tray {
+      margin-right: 6px;
+    }
+
+    #network {
+      margin-right: 6px;
+    }
+
+    #pulseaudio {
+      margin-right: 6px;
+    }
+
+    #custom-power {
+      color: #ed8796;
+      background: #494d64;
+    }
+
+    #clock {
+      margin-right: 6px;
+    }
+
+    #mpd {
+      background: #494d64;
+      background-image: linear-gradient(62deg, #494d64 0%, #363a4f 100%);
+      color: #cad3f5;
+    }
+
+    #mpd.playing {
+      background: #494d64;
+      background-image: linear-gradient(
+        62deg,
+        #494d64 0%,
+        rgba(166, 218, 149, 0) 100%
+      );
+      color: #a6da95;
+    }
+
+    #mpd.paused {
+      background: #494d64;
+      background-image: linear-gradient(
+        62deg,
+        #494d64 0%,
+        rgba(237, 135, 150, 0) 100%
+      );
+      color: #f5bde6;
+    }
+
+    #taskbar {
+      background: #24273a;
+      padding: 0 0.6em;
+      margin-right: 10px;
+      margin-left: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      color: #cad3f5;
+    }
+
+    #taskbar button {
+      border-radius: 6px;
+      background: #494d64;
+      color: #8087a2;
+      margin-right: 6px;
+    }
+
+    #taskbar button.minimized {
+      border-radius: 6px;
+      background: #494d64;
+      color: #8087a2;
+    }
+
+    #taskbar button.active {
+      border-radius: 6px;
+      background: #494d64;
+      color: #c6a0f6;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 30%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes gradient_f {
+      0% { background-position: 0% 200%; }
+      50% { background-position: 200% 0%; }
+      100% { background-position: 400% 200%; }
+    }
+
+    @keyframes gradient_f_nh {
+      0% { background-position: 0% 200%; }
+      100% { background-position: 200% 200%; }
+    }
+
+    #custom-music.low {
+      background: rgb(148, 226, 213);
+      background: linear-gradient(
+        52deg,
+        rgba(148, 226, 213, 1) 0%,
+        rgba(137, 220, 235, 1) 19%,
+        rgba(116, 199, 236, 1) 43%,
+        rgba(137, 180, 250, 1) 56%,
+        rgba(180, 190, 254, 1) 80%,
+        rgba(186, 187, 241, 1) 100%
+      );
+      background-size: 300% 300%;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      animation: gradient 15s ease infinite;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    #custom-music.random {
+      background: rgb(148, 226, 213);
+      background: radial-gradient(
+        circle,
+        rgba(148, 226, 213, 1) 0%,
+        rgba(156, 227, 191, 1) 21%,
+        rgba(249, 226, 175, 1) 34%,
+        rgba(158, 227, 186, 1) 35%,
+        rgba(163, 227, 169, 1) 59%,
+        rgba(148, 226, 213, 1) 74%,
+        rgba(164, 227, 167, 1) 74%,
+        rgba(166, 227, 161, 1) 100%
+      );
+      background-size: 400% 400%;
+      animation: gradient_f 4s ease infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    #custom-music.critical {
+      background: rgb(235, 160, 172);
+      background: linear-gradient(
+        52deg,
+        rgba(235, 160, 172, 1) 0%,
+        rgba(243, 139, 168, 1) 30%,
+        rgba(231, 130, 132, 1) 48%,
+        rgba(250, 179, 135, 1) 77%,
+        rgba(249, 226, 175, 1) 100%
+      );
+      background-size: 300% 300%;
+      animation: gradient 15s cubic-bezier(0.55, -0.68, 0.48, 1.68) infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    #custom-music.Playing {
+      background: radial-gradient(
+        circle,
+        rgba(166, 218, 149, 120) 0%,
+        rgba(73, 77, 100, 1) 15%,
+        rgba(166, 218, 149, 120) 75%,
+        rgba(166, 218, 149, 120) 100%
+      );
+      background-size: 400% 400%;
+      animation: gradient_f 9s cubic-bezier(0.72, 0.39, 0.21, 1) infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #cad3f5;
+    }
+
+    #custom-music.Paused,
+    #custom-music.Stopped {
+      background: #8087a2;
+    }
+  '';
 in
 {
   programs.waybar = {
@@ -630,8 +904,8 @@ in
 
         pulseaudio = {
           "scroll-step" = 1;
-          format = "󰕾 {volume}%";
-          "format-muted" = "󰖁 Muted";
+          format = "󰕾  {volume}%";
+          "format-muted" = "󰖁  Muted";
           "format-icons" = {
             headphone = "";
             "hands-free" = "󰋎";
@@ -698,7 +972,7 @@ in
         };
 
         backlight = {
-          format = "󰃠 {percent}%";
+          format = "󰃠  {percent}%";
           "on-scroll-up" = "brightness.sh --dec";
           "on-click" = "brightness-hub";
           "on-scroll-down" = "brightness.sh --inc";
@@ -782,6 +1056,12 @@ in
       };
     };
 
-    style = if theme == "dracula" then draculaStyle else gruvboxStyle;
+    style =
+      if theme == "dracula" then
+        draculaStyle
+      else if theme == "catppuccin-macchiato" then
+        catppuccinStyle
+      else
+        gruvboxStyle;
   };
 }

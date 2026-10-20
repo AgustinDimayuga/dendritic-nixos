@@ -17,7 +17,7 @@ in
         enable = true;
         font = {
           name = "MonoLisa Variable";
-          size = 12;
+          size = 14;
         };
         settings = {
           background_opacity = .80;
@@ -118,6 +118,60 @@ in
         # white
         color7 = "#a89984";
         color15 = "#bdae93";
+      };
+    })
+
+    # Catppuccin Macchiato theme
+    (lib.mkIf (theme == "catppuccin-macchiato") {
+      programs.kitty.settings = {
+        foreground = "#cad3f5";
+        background = "#24273a";
+        selection_foreground = "#24273a";
+        selection_background = "#f4dbd6";
+        cursor = "#f4dbd6";
+        cursor_text_color = "#24273a";
+        scrollbar_handle_color = "#939ab7";
+        scrollbar_track_color = "#494d64";
+        url_color = "#f4dbd6";
+        visual_bell_color = "#eed49f";
+        bell_border_color = "#eed49f";
+        active_border_color = "#b7bdf8";
+        inactive_border_color = "#6e738d";
+        active_tab_foreground = "#181926";
+        active_tab_background = "#c6a0f6";
+        inactive_tab_foreground = "#cad3f5";
+        inactive_tab_background = "#1e2030";
+        tab_bar_background = "#181926";
+        mark1_foreground = "#24273a";
+        mark1_background = "#b7bdf8";
+        mark2_foreground = "#24273a";
+        mark2_background = "#c6a0f6";
+        mark3_foreground = "#24273a";
+        mark3_background = "#7dc4e4";
+        # black
+        color0 = "#494d64";
+        color8 = "#5b6078";
+        # red
+        color1 = "#ed8796";
+        color9 = "#ed8796";
+        # green
+        color2 = "#a6da95";
+        color10 = "#a6da95";
+        # yellow
+        color3 = "#eed49f";
+        color11 = "#eed49f";
+        # blue
+        color4 = "#8aadf4";
+        color12 = "#8aadf4";
+        # magenta
+        color5 = "#f5bde6";
+        color13 = "#f5bde6";
+        # cyan
+        color6 = "#8bd5ca";
+        color14 = "#8bd5ca";
+        # white
+        color7 = "#b8c0e0";
+        color15 = "#a5adcb";
       };
     })
 

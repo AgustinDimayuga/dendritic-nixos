@@ -11,6 +11,7 @@ let
   wallpaperFile = {
     dracula = ../assets/wallpapers/nixos.png;
     gruvbox = ../assets/wallpapers/gruvbox-dark-blue.png;
+    catppuccin-macchiato = ../assets/wallpapers/catppuccin.png;
   };
 
   wallpaper = toString wallpaperFile.${theme};

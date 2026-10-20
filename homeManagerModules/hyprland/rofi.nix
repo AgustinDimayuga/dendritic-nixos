@@ -36,13 +36,33 @@ let
     }
   '';
 
-  colors = if theme == "dracula" then draculaColors else gruvboxColors;
+  catppuccinColors = ''
+    * {
+        bg-col:  #24273a;
+        bg-col-light: #24273a;
+        border-col: #b7bdf8;
+        selected-col: #494d64;
+        blue: #8aadf4;
+        fg-col: #cad3f5;
+        fg-col2: #a5adcb;
+        grey: #8087a2;
+        width: 600;
+    }
+  '';
+
+  colors =
+    if theme == "dracula" then
+      draculaColors
+    else if theme == "catppuccin-macchiato" then
+      catppuccinColors
+    else
+      gruvboxColors;
 
   configRasi = ''
     configuration{
         modi: "run,drun,window";
         lines: 5;
-        font: "JetBrainsMono Nerd Font 14";
+        font: "MonoLisaText Trial 14";
         show-icons: true;
         terminal: "kitty";
         drun-display-format: "{icon} {name}";

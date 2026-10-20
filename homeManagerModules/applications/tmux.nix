@@ -66,6 +66,63 @@ let
     set -g @prefix_highlight_copy_mode_attr 'fg=black,bg=yellow,bold'
   '';
 
+  catppuccinExtraConfig = ''
+    # --> Catppuccin (Macchiato)
+    set -ogq @thm_bg "#24273a"
+    set -ogq @thm_fg "#cad3f5"
+
+    set -ogq @thm_rosewater "#f4dbd6"
+    set -ogq @thm_flamingo "#f0c6c6"
+    set -ogq @thm_pink "#f5bde6"
+    set -ogq @thm_mauve "#c6a0f6"
+    set -ogq @thm_red "#ed8796"
+    set -ogq @thm_maroon "#ee99a0"
+    set -ogq @thm_peach "#f5a97f"
+    set -ogq @thm_yellow "#eed49f"
+    set -ogq @thm_green "#a6da95"
+    set -ogq @thm_teal "#8bd5ca"
+    set -ogq @thm_sky "#91d7e3"
+    set -ogq @thm_sapphire "#7dc4e4"
+    set -ogq @thm_blue "#8aadf4"
+    set -ogq @thm_lavender "#b7bdf8"
+
+    set -ogq @thm_subtext_1 "#a5adcb"
+    set -ogq @thm_subtext_0 "#b8c0e0"
+    set -ogq @thm_overlay_2 "#939ab7"
+    set -ogq @thm_overlay_1 "#8087a2"
+    set -ogq @thm_overlay_0 "#6e738d"
+    set -ogq @thm_surface_2 "#5b6078"
+    set -ogq @thm_surface_1 "#494d64"
+    set -ogq @thm_surface_0 "#363a4f"
+    set -ogq @thm_mantle "#1e2030"
+    set -ogq @thm_crust "#181926"
+
+    set-option -g status-position bottom
+
+    setw -g clock-mode-colour '#c6a0f6'
+    setw -g mode-style 'fg=#cad3f5 bg=#5b6078 bold'
+    set -g pane-border-style 'fg=#494d64 bg=#1e2030'
+    set -g pane-active-border-style 'fg=#b7bdf8 bg=#24273a'
+
+    set -g status-style 'bg=#181926 fg=#cad3f5 dim'
+
+    set -g status-right '#{prefix_highlight} #[fg=#181926,bg=#c6a0f6,bold] %d/%m #[fg=#181926,bg=#f5bde6,bold] %I:%M:%S '
+
+    setw -g window-status-current-style 'fg=#a6da95 bg=#5b6078 bold'
+    setw -g window-status-current-format ' #I#[fg=#6e738d]:#[fg=#cad3f5]#W#[fg=#eed49f]#F '
+    setw -g window-status-style 'fg=#6e738d bg=#181926 none'
+    setw -g window-status-format ' #I#[fg=#363a4f]:#[fg=#cad3f5]#W#[fg=#6e738d]#F '
+    setw -g window-status-bell-style 'fg=#cad3f5 bg=#ed8796 bold'
+
+    set -g message-style 'fg=#181926 bg=#c6a0f6 bold'
+    set -g message-command-style 'fg=#8bd5ca bg=#181926'
+
+    set -g @prefix_highlight_fg '#181926'
+    set -g @prefix_highlight_bg '#eed49f,bold'
+    set -g @prefix_highlight_show_copy_mode 'on'
+    set -g @prefix_highlight_copy_mode_attr 'fg=#181926,bg=#eed49f,bold'
+  '';
+
   sharedConfig = ''
     bind | split-window -h
     bind - split-window -v
@@ -95,7 +152,13 @@ in
     enable = true;
     mouse = true;
     keyMode = "vi";
-    terminal = if theme == "dracula" then "tmux-256color" else "screen-256color";
+    terminal =
+      if theme == "dracula" then
+        "tmux-256color"
+      else if theme == "catppuccin-macchiato" then
+        "tmux-256color"
+      else
+        "screen-256color";
 
     plugins = with pkgs.tmuxPlugins; [
       sensible
@@ -107,6 +170,14 @@ in
     ];
 
     extraConfig =
-      sharedConfig + (if theme == "dracula" then draculaExtraConfig else gruvboxExtraConfig);
+      sharedConfig
+      + (
+        if theme == "dracula" then
+          draculaExtraConfig
+        else if theme == "catppuccin-macchiato" then
+          catppuccinExtraConfig
+        else
+          gruvboxExtraConfig
+      );
   };
 }
