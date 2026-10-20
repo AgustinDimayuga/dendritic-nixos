@@ -14,7 +14,7 @@
   ];
   hyprland-laptop.enable = true;
   nixpkgs.config.allowUnfree = true;
-  theme = "catppuccin-macchiato";
+  theme = "catppuccin-mocha";
   #
 
   # Home Manager needs a bit of information about you and the paths it should

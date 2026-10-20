@@ -65,6 +65,25 @@ let
         "editor.lineHighlightBackground" = "#ffffff0a";
       };
     };
+    catppuccin-mocha = {
+      colorTheme = "Catppuccin Mocha";
+      extension = pkgs.open-vsx.catppuccin.catppuccin-vsc;
+      colors = {
+        "editor.background" = "#1e1e2e";
+        "sideBar.background" = "#181825";
+        "panel.background" = "#181825";
+        "terminal.background" = "#1e1e2e";
+        "editorGroupHeader.tabsBackground" = "#11111b";
+        "tab.activeBackground" = "#1e1e2e";
+        "tab.inactiveBackground" = "#11111b";
+        "tab.border" = "#00000000";
+        "tab.activeBorder" = "#00000000";
+        "tab.activeBorderTop" = "#cba6f7";
+        "editorGroup.border" = "#00000000";
+        "editorLineNumber.foreground" = "#7f849c";
+        "editor.lineHighlightBackground" = "#ffffff0a";
+      };
+    };
   };
 
   current = themeSettings.${theme};

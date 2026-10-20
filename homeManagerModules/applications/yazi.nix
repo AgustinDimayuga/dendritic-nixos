@@ -13,6 +13,7 @@ let
     dracula = "dracula";
     gruvbox = "gruvbox-dark";
     catppuccin-macchiato = "catppuccin-macchiato";
+    catppuccin-mocha = "catppuccin-mocha";
   };
 in
 {
@@ -20,6 +21,8 @@ in
   xdg.configFile."yazi/flavors/gruvbox-dark.yazi".source = inputs.yazi-gruvbox-flavor;
   xdg.configFile."yazi/flavors/catppuccin-macchiato.yazi".source =
     "${inputs.yazi-flavors}/catppuccin-macchiato.yazi";
+  xdg.configFile."yazi/flavors/catppuccin-mocha.yazi".source =
+    "${inputs.yazi-flavors}/catppuccin-mocha.yazi";
 
   programs.yazi = {
     enable = true;

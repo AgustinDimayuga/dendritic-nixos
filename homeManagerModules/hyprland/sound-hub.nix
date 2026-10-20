@@ -33,6 +33,14 @@ let
       fg = "#cad3f5";
       accent = "#91d7e3";
     };
+    catppuccin-mocha = {
+      bg = "#1e1e2e";
+      panel = "#45475a";
+      border = "#cdd6f4";
+      selBg = "#45475a";
+      fg = "#cdd6f4";
+      accent = "#89dceb";
+    };
   };
   p = palettes.${theme};
 

@@ -50,11 +50,27 @@ let
     }
   '';
 
+  catppuccinMochaColors = ''
+    * {
+        bg-col:  #1e1e2e;
+        bg-col-light: #1e1e2e;
+        border-col: #b4befe;
+        selected-col: #45475a;
+        blue: #89b4fa;
+        fg-col: #cdd6f4;
+        fg-col2: #a6adc8;
+        grey: #7f849c;
+        width: 600;
+    }
+  '';
+
   colors =
     if theme == "dracula" then
       draculaColors
     else if theme == "catppuccin-macchiato" then
       catppuccinColors
+    else if theme == "catppuccin-mocha" then
+      catppuccinMochaColors
     else
       gruvboxColors;
 

@@ -281,5 +281,18 @@ in
       };
     })
 
+    # Catppuccin Mocha theme — border colors
+    (lib.mkIf (theme == "catppuccin-mocha") {
+      wayland.windowManager.hyprland.settings.config.general = {
+        col = {
+          # active_border = "rgb(b4befe)";
+          # inactive_border = "rgba(6c708699)";
+
+          active_border = "rgb(45403d)";
+          inactive_border = "rgba(45403d99)";
+        };
+      };
+    })
+
   ];
 }

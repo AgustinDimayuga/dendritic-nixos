@@ -37,6 +37,15 @@ let
       brightness = "#eed49f";
       dim = "#8087a2";
     };
+    catppuccin-mocha = {
+      bg = "#1e1e2e";
+      panel = "#45475a";
+      border = "#cdd6f4";
+      fg = "#cdd6f4";
+      volume = "#89dceb";
+      brightness = "#f9e2af";
+      dim = "#7f849c";
+    };
   };
   p = palettes.${theme};
 

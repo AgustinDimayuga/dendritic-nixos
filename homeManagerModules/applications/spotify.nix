@@ -11,6 +11,8 @@ let
       "dracula"
     else if theme == "catppuccin-macchiato" then
       "catppuccin-macchiato"
+    else if theme == "catppuccin-mocha" then
+      "catppuccin-mocha"
     else
       "gruvbox-material-dark";
 in

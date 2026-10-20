@@ -12,6 +12,7 @@ let
     dracula = ../assets/wallpapers/nixos.png;
     gruvbox = ../assets/wallpapers/gruvbox-dark-blue.png;
     catppuccin-macchiato = ../assets/wallpapers/catppuccin.png;
+    catppuccin-mocha = ../assets/wallpapers/catppuccin.png;
   };
 
   wallpaper = toString wallpaperFile.${theme};
@@ -46,11 +47,23 @@ let
     fail = "rgba(ed8796ff)";
   };
 
+  catppuccinMochaColors = {
+    label = "rgba(cdd6f4ff)";
+    labelDim = "rgba(a6adc8ff)";
+    outer = "rgba(b4befeff)";
+    inner = "rgba(1e1e2eff)";
+    font = "rgba(cdd6f4ff)";
+    check = "rgba(a6e3a1ff)";
+    fail = "rgba(f38ba8ff)";
+  };
+
   c =
     if theme == "dracula" then
       draculaColors
     else if theme == "catppuccin-macchiato" then
       catppuccinColors
+    else if theme == "catppuccin-mocha" then
+      catppuccinMochaColors
     else
       gruvboxColors;
 in
