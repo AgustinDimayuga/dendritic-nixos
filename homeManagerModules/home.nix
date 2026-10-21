@@ -14,7 +14,7 @@
   ];
   hyprland-laptop.enable = true;
   nixpkgs.config.allowUnfree = true;
-  theme = "catppuccin-mocha";
+  theme = "dracula";
   #
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -23,14 +23,5 @@
   home.homeDirectory = "/home/agustin";
   programs.home-manager.enable = true;
   home.stateVersion = "26.05"; # Please read the comment before changing.
-
-  programs.zsh = {
-    enable = true;
-    initContent = ''
-      bindkey -v
-      export EDITOR=nvim
-      export PATH="$HOME/.emacs.d/bin:$PATH"
-    '';
-  };
 
 }

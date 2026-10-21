@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 {
   environment.shells = with pkgs; [ zsh ];
@@ -11,14 +12,7 @@
     zsh-autoenv.enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-    ohMyZsh = {
-      enable = true;
-      theme = "robbyrussell";
-      plugins = [
-        "git"
-        "web-search"
-      ];
-    };
+    enableGlobalCompInit = false;
   };
 
 }

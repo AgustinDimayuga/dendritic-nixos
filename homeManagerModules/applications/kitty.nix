@@ -23,6 +23,8 @@ in
           background_opacity = .80;
           sync_to_monitor = true;
           window_padding_width = 25;
+          # kittty auto fullscreen fix temp
+          remember_window_size = false;
         };
         keybindings = {
           "ctrl+c" = "copy_or_interrupt";

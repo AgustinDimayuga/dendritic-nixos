@@ -12,6 +12,7 @@
     ./spotify.nix
     ./browserapplications.nix
     ./chromium.nix
+    ./zsh.nix
   ];
 
 }
