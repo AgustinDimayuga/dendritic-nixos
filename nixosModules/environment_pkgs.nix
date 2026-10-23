@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ...}:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
 
@@ -16,8 +21,9 @@
     tmux
     btop
     util-linux
+    bitwarden-desktop
+    seahorse
 
   ];
-
 
 }

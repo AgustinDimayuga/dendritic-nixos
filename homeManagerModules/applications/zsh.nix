@@ -223,7 +223,7 @@ let
   # directory segment, same spot Catppuccin's %n already shows it.
   ohMyZshThemeExtraConfig =
     if theme == "dracula" then
-      ''DRACULA_DISPLAY_CONTEXT=1''
+      "DRACULA_DISPLAY_CONTEXT=1"
     else if theme == "catppuccin-macchiato" then
       ''CATPPUCCIN_FLAVOR="macchiato"''
     else if theme == "catppuccin-mocha" then
@@ -242,16 +242,38 @@ let
     PROMPT+=' $(git_prompt_info)'
   '';
 
+  # Accent color for the (dev-shell) tag, from each theme's palette
+  devShellColor =
+    if theme == "dracula" then
+      "#8BE9FD" # Dracula cyan
+    else if theme == "catppuccin-macchiato" then
+      "#8bd5ca" # Macchiato teal
+    else if theme == "catppuccin-mocha" then
+      "#94e2d5" # Mocha teal
+    else
+      "#8ec07c"; # Gruvbox aqua
+
+  # Tag the prompt when inside `nix develop` (IN_NIX_SHELL is set by nix).
+  devShellPrompt = ''
+    if [[ -n "$IN_NIX_SHELL" ]]; then
+      PROMPT+='%F{${devShellColor}}❄%f '
+    fi
+  '';
+
   promptOverride = if theme == "gruvbox" then gruvboxPromptOverride else "";
 in
 {
   programs.zsh = {
     enable = true;
-    initContent = syntaxHighlighting + promptOverride + ''
-      bindkey -v
-      export EDITOR=nvim
-      export PATH="$HOME/.emacs.d/bin:$PATH"
-    '';
+    initContent =
+      syntaxHighlighting
+      + promptOverride
+      + devShellPrompt
+      + ''
+        bindkey -v
+        export EDITOR=nvim
+        export PATH="$HOME/.emacs.d/bin:$PATH"
+      '';
 
     oh-my-zsh = {
       enable = true;

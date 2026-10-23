@@ -20,6 +20,13 @@
 
       services.fprintd.enable = true;
 
+      # Secret Service for Bitwarden biometric unlock
+      services.gnome.gnome-keyring.enable = true;
+      # Typing your password into hyprlock unlocks the keyring
+      security.pam.services.hyprlock.enableGnomeKeyring = true;
+      security.pam.services.hyprlock.fprintAuth = false;
+      security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
+
       services.libinput = {
         enable = true;
         touchpad = {

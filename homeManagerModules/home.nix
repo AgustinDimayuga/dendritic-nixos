@@ -22,6 +22,7 @@
   home.username = "agustin";
   home.homeDirectory = "/home/agustin";
   programs.home-manager.enable = true;
+  services.hyprpolkitagent.enable = true;
   home.stateVersion = "26.05"; # Please read the comment before changing.
 
 }

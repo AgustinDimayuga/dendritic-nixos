@@ -64,6 +64,7 @@ in
             focus_fit_method = 1;
             explicit_column_widths = "0.65, 1.0";
             fullscreen_on_one_column = true;
+            follow_min_visible = 0.3;
           };
 
           master = {
