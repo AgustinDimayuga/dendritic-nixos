@@ -6,14 +6,17 @@
 }:
 
 let
-  testMode = false; # set to false when done testing
+  testMode = true; # set to false when done testing
   t = test: normal: if testMode then test else normal;
+
+  ddcutil = "${pkgs.ddcutil}/bin/ddcutil";
 
   baseListeners = [
     {
       timeout = t 15 180;
-      on-timeout = "brightnessctl -s set 10";
-      on-resume = "brightnessctl -r";
+      # dim laptop panel + external monitor (each one quietly fails if not present)
+      on-timeout = "brightnessctl -c backlight -s set 10%; ${ddcutil} setvcp 10 10";
+      on-resume = "brightnessctl -c backlight -r; ${ddcutil} setvcp 10 100";
     }
     {
       timeout = t 30 300;
@@ -21,8 +24,8 @@ let
     }
     {
       timeout = t 35 330;
-      on-timeout = "hyprctl dispatch dpms off";
-      on-resume = "hyprctl dispatch dpms on && brightnessctl -r";
+      on-timeout = "hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'";
+      on-resume = "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
     }
   ];
 
@@ -43,7 +46,7 @@ in
         lock_cmd = "pidof hyprlock || hyprlock --grace 100";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd =
-          "hyprctl dispatch dpms on"
+          "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'"
           + lib.optionalString config.hyprland-laptop.enable "; ${lib.getExe config.clamshell.package} hotplug";
       };
 

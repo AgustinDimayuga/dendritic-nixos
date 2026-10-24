@@ -10,6 +10,7 @@
   };
   config = lib.mkMerge [
     {
+      hardware.i2c.enable = true;
       virtualisation.docker = {
         enable = false; # turn off the root daemon if nothing else needs it
         rootless = {
@@ -17,7 +18,10 @@
           setSocketVariable = true;
         };
       };
-      environment.systemPackages = with pkgs; [ brightnessctl ];
+      environment.systemPackages = with pkgs; [
+        brightnessctl
+        ddcutil
+      ];
     }
     (lib.mkIf config.laptop-hardware.enable {
       services.fwupd.enable = true;
