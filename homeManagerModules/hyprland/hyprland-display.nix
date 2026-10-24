@@ -34,7 +34,7 @@
     (lib.mkIf config.hyprland-desktop.enable {
       wayland.windowManager.hyprland.settings.monitor = [
         {
-          output = "DP-3";
+          output = "DP-2";
           mode = "2560x1440@360";
           position = "auto-left";
           scale = 1;

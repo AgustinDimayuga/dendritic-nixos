@@ -48,6 +48,13 @@
         ];
 
       };
+      nixosConfigurations.home-pc = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./hosts/home-pc/configuration.nix
+        ];
+
+      };
       homeConfigurations.agustin = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = { inherit inputs; };
