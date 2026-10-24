@@ -10,6 +10,13 @@
   };
   config = lib.mkMerge [
     {
+      virtualisation.docker = {
+        enable = false; # turn off the root daemon if nothing else needs it
+        rootless = {
+          enable = true;
+          setSocketVariable = true;
+        };
+      };
       environment.systemPackages = with pkgs; [ brightnessctl ];
     }
     (lib.mkIf config.laptop-hardware.enable {
