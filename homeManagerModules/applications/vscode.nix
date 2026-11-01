@@ -259,6 +259,14 @@ in
             ];
             commands = [ "workbench.action.toggleSidebarVisibility" ];
           }
+          {
+            before = [ "H" ];
+            commands = [ "workbench.action.previousEditor" ];
+          }
+          {
+            before = [ "L" ];
+            commands = [ "workbench.action.nextEditor" ];
+          }
         ];
 
         # go (tools come from nix, so don't let the extension download its own)
@@ -342,6 +350,22 @@ in
           key = "capslock";
           command = "workbench.action.closeQuickOpen";
           when = "inQuickOpen";
+        }
+        {
+          key = "ctrl+h";
+          command = "workbench.action.navigateLeft";
+        }
+        {
+          key = "ctrl+j";
+          command = "workbench.action.navigateDown";
+        }
+        {
+          key = "ctrl+k";
+          command = "workbench.action.navigateUp";
+        }
+        {
+          key = "ctrl+l";
+          command = "workbench.action.navigateRight";
         }
       ];
     };
