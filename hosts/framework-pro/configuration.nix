@@ -31,6 +31,14 @@
 
   laptop-hardware.enable = true;
 
+  # The mainline cros_kbd_led_backlight driver binds to the keyboard backlight
+  # LED (chromeos::kbd_backlight) in addition to the out-of-tree framework_laptop
+  # module's own device (framework_laptop::kbd_backlight). Both talk to the same
+  # EC PWM output, so their independently-saved/restored brightness values fight
+  # each other and the backlight flickers between them, most visibly at low %.
+  # Blacklist the mainline driver so only framework_laptop controls it.
+  boot.blacklistedKernelModules = [ "cros_kbd_led_backlight" ];
+
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;

@@ -6,7 +6,7 @@
 }:
 
 let
-  testMode = true; # set to false when done testing
+  testMode = false; # set to false when done testing
   t = test: normal: if testMode then test else normal;
 
   ddcutil = "${pkgs.ddcutil}/bin/ddcutil";
@@ -15,7 +15,7 @@ let
     {
       timeout = t 15 180;
       # dim laptop panel + external monitor (each one quietly fails if not present)
-      on-timeout = "brightnessctl -c backlight -s set 10%; ${ddcutil} setvcp 10 10";
+      on-timeout = "brightnessctl -c backlight -s set 1%; ${ddcutil} setvcp 10 10";
       on-resume = "brightnessctl -c backlight -r; ${ddcutil} setvcp 10 100";
     }
     {

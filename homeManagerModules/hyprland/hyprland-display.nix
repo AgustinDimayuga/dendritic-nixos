@@ -54,9 +54,9 @@
         }
         {
           output = "DP-1";
-          mode = "2560x1440@360";
-          position = "auto-right";
-          scale = 1;
+          mode = "3840x2560@120";
+          position = "auto-left";
+          scale = 1.6;
         }
       ];
     })
