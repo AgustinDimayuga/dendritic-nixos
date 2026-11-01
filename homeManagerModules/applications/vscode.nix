@@ -84,6 +84,24 @@ let
         "editor.lineHighlightBackground" = "#ffffff0a";
       };
     };
+    gruvbox-light = {
+      colorTheme = "Gruvbox Light Soft";
+      extension = pkgs.open-vsx.jdinhlife.gruvbox;
+      colors = {
+        "editor.background" = "#f2e5bc";
+        "sideBar.background" = "#f2e5bc";
+        "panel.background" = "#f2e5bc";
+        "terminal.background" = "#f2e5bc";
+        "editorGroupHeader.tabsBackground" = "#e5d3a1";
+        "tab.activeBackground" = "#f2e5bc";
+        "tab.inactiveBackground" = "#e5d3a1";
+        "tab.border" = "#00000000";
+        "tab.activeBorder" = "#00000000";
+        "tab.activeBorderTop" = "#b57614";
+        "editorGroup.border" = "#00000000";
+        "editor.lineHighlightBackground" = "#0000000a";
+      };
+    };
   };
 
   current = themeSettings.${theme};
