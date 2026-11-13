@@ -30,6 +30,7 @@
   ];
 
   laptop-hardware.enable = true;
+  kernel-latest.enable = true;
 
   # The mainline cros_kbd_led_backlight driver binds to the keyboard backlight
   # LED (chromeos::kbd_backlight) in addition to the out-of-tree framework_laptop
