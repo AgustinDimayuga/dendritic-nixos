@@ -41,6 +41,14 @@ let
       fg = "#cdd6f4";
       accent = "#89dceb";
     };
+    gruvbox-light = {
+      bg = "#fbf1c7";
+      panel = "#ebdbb2";
+      border = "#3c3836";
+      selBg = "#d5c4a1";
+      fg = "#3c3836";
+      accent = "#076678";
+    };
   };
   p = palettes.${theme};
 

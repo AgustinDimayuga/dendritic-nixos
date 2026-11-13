@@ -13,6 +13,7 @@ let
     gruvbox = ../assets/wallpapers/gruvbox-dark-blue.png;
     catppuccin-macchiato = ../assets/wallpapers/flatppuccin_4k_macchiato.png;
     catppuccin-mocha = ../assets/wallpapers/catppuccin.png;
+    gruvbox-light = ../assets/wallpapers/gruvbox-light.png;
   };
 
   wallpaper = toString wallpaperFile.${theme};

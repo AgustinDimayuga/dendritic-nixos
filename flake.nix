@@ -10,6 +10,8 @@
     yazi-flavors.flake = false;
     yazi-gruvbox-flavor.url = "github:bennyyip/gruvbox-dark.yazi";
     yazi-gruvbox-flavor.flake = false;
+    yazi-gruvbox-light-flavor.url = "github:Sh00Fly/gruvbox-light.yazi";
+    yazi-gruvbox-light-flavor.flake = false;
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -26,6 +28,7 @@
       home-manager,
       yazi-flavors,
       yazi-gruvbox-flavor,
+      yazi-gruvbox-light-flavor,
       nix-vscode-extensions,
       spicetify-colorful,
       spicetify-nix,

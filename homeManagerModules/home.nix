@@ -12,7 +12,8 @@
     ./applications/applications.nix
     ./theme.nix
   ];
-  hyprland-laptop.enable = true;
+  hyprland-laptop.enable = false;
+  hyprland-desktop.enable = true;
   nixpkgs.config.allowUnfree = true;
   theme = "dracula";
   #

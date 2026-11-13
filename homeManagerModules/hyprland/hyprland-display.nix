@@ -35,9 +35,9 @@
       wayland.windowManager.hyprland.settings.monitor = [
         {
           output = "DP-1";
-          mode = "2560x1440@360";
+          mode = "3840x2560@120";
           position = "auto-left";
-          scale = 1;
+          scale = 1.6;
         }
       ];
     })

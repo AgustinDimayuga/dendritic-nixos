@@ -46,6 +46,15 @@ let
       brightness = "#f9e2af";
       dim = "#7f849c";
     };
+    gruvbox-light = {
+      bg = "#fbf1c7";
+      panel = "#ebdbb2";
+      border = "#3c3836";
+      fg = "#3c3836";
+      volume = "#b57614";
+      brightness = "#af3a03";
+      dim = "#928374";
+    };
   };
   p = palettes.${theme};
 

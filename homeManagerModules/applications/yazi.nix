@@ -14,6 +14,7 @@ let
     gruvbox = "gruvbox-dark";
     catppuccin-macchiato = "catppuccin-macchiato";
     catppuccin-mocha = "catppuccin-mocha";
+    gruvbox-light = "gruvbox-light";
   };
 in
 {
@@ -23,6 +24,7 @@ in
     "${inputs.yazi-flavors}/catppuccin-macchiato.yazi";
   xdg.configFile."yazi/flavors/catppuccin-mocha.yazi".source =
     "${inputs.yazi-flavors}/catppuccin-mocha.yazi";
+  xdg.configFile."yazi/flavors/gruvbox-light.yazi".source = inputs.yazi-gruvbox-light-flavor;
 
   programs.yazi = {
     enable = true;
@@ -51,7 +53,11 @@ in
 
     theme = {
       flavor = {
+        # set both `dark` and `light` to the active flavor so yazi always uses
+        # it regardless of whether it detects a dark or light terminal
+        # background (only relevant now that gruvbox-light is light).
         dark = flavorName.${theme};
+        light = flavorName.${theme};
       };
     };
   };

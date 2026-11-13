@@ -529,6 +529,248 @@ let
     }
   '';
 
+  gruvboxLightStyle = ''
+    * {
+      border: none;
+      border-radius: 0px;
+      font-family: MonoLisaText Trial;
+      font-weight: bold;
+      font-size: 15px;
+      min-height: 0;
+    }
+
+
+    #connectivity {
+        background: #f2e5bc;
+        margin: 4px 6px 4px 4px;
+        border-radius: 6px;
+      }
+
+    #connectivity #tray,
+    #connectivity #bluetooth {
+        background: transparent;
+        margin: 0;
+        padding: 0 0.5em;
+      }
+
+    #bluetooth {
+        color: #3c3836;
+      }
+
+    #bluetooth.off,
+    #bluetooth.disabled {
+        color: #928374;
+      }
+
+    #bluetooth.connected {
+        color: #076678;
+      }
+
+    #custom-calcurse {
+      background: #f2e5bc;
+      color: #3c3836;
+      padding: 0 0.6em;
+      margin: 4px;
+      border-radius: 6px;
+    }
+    window#waybar {
+      background: #f9f5d7;
+      color: #3c3836;
+    }
+
+    tooltip {
+      background: #fbf1c7;
+      border-radius: 10px;
+      border-width: 2px;
+      border-style: solid;
+      border-color: #f9f5d7;
+    }
+    #workspaces button {
+      padding: 0 0.4em;
+      color: #d5c4a1;
+      border-radius: 6px;
+      margin-right: 2px;
+      margin-left: 2px;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    #workspaces button.active {
+      color: #3c3836;
+      background: #689d6a;
+    }
+
+    #workspaces button.focused {
+      color: #3c3836;
+      background: #689d6a;
+    }
+
+    #workspaces button.urgent {
+      color: #f9f5d7;
+      background: #9d0006;
+    }
+
+    #workspaces button:hover {
+      background: #689d6a;
+      color: #3c3836;
+    }
+
+    #custom-power,
+    #date,
+    #backlight,
+    #idle_inhibitor,
+    #pulseaudio,
+    #network,
+    #workspaces,
+    #mpd,
+    #temperature,
+    #clock,
+    #tray,
+    #battery {
+      background: #f2e5bc;
+      padding: 0 0.5em;
+      margin-right: 4px;
+      margin-left: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+    }
+
+    #tray {
+      margin-right: 6px;
+    }
+
+    #network {
+      color: #3c3836;
+      margin-right: 6px;
+    }
+
+    #pulseaudio {
+      margin-right: 6px;
+      color: #3c3836;
+    }
+
+    #custom-power {
+      color: #9d0006;
+      background: #f2e5bc;
+    }
+
+    #clock {
+      color: #3c3836;
+      margin-right: 6px;
+    }
+
+    #mpd {
+      background: #f2e5bc;
+      background-image: linear-gradient(62deg, #f2e5bc 0%, #ebdbb2 100%);
+      color: #3c3836;
+    }
+
+    #mpd.playing {
+      background: #f2e5bc;
+      background-image: linear-gradient(62deg, #f2e5bc 0%, rgba(184,187,38,00) 100%);
+      color: #3c3836;
+    }
+
+    #mpd.paused {
+      background: #f2e5bc;
+      background-image: linear-gradient(62deg, #f2e5bc 0%, rgba(251,73,52,00) 100%);
+      color: #3c3836;
+    }
+
+    #taskbar {
+      background: #f9f5d7;
+      padding: 0 0.6em;
+      margin-right: 10px;
+      margin-left: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      color: #3c3836;
+    }
+
+    #taskbar button {
+      border-radius: 6px;
+      background: #f2e5bc;
+      color: #7c6f64;
+      margin-right: 6px;
+    }
+
+    #taskbar button.minimized {
+      border-radius: 6px;
+      background: #f2e5bc;
+      color: #7c6f64;
+    }
+
+    #taskbar button.active {
+      border-radius: 6px;
+      background: #689d6a;
+      color: #3c3836;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 30%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes gradient_f {
+      0% { background-position: 0% 200%; }
+      50% { background-position: 200% 0%; }
+      100% { background-position: 400% 200%; }
+    }
+
+    @keyframes gradient_f_nh {
+      0% { background-position: 0% 200%; }
+      100% { background-position: 200% 200%; }
+    }
+
+    #custom-music.low {
+      background: rgb(148, 226, 213);
+      background: linear-gradient(52deg, rgba(148, 226, 213, 1) 0%, rgba(137, 220, 235, 1) 19%, rgba(116, 199, 236, 1) 43%, rgba(137, 180, 250, 1) 56%, rgba(180, 190, 254, 1) 80%, rgba(186, 187, 241, 1) 100%);
+      background-size: 300% 300%;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      animation: gradient 15s ease infinite;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    #custom-music.random {
+      background: rgb(148, 226, 213);
+      background: radial-gradient(circle, rgba(148, 226, 213, 1) 0%, rgba(156, 227, 191, 1) 21%, rgba(249, 226, 175, 1) 34%, rgba(158, 227, 186, 1) 35%, rgba(163, 227, 169, 1) 59%, rgba(148, 226, 213, 1) 74%, rgba(164, 227, 167, 1) 74%, rgba(166, 227, 161, 1) 100%);
+      background-size: 400% 400%;
+      animation: gradient_f 4s ease infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #fff;
+    }
+
+    #custom-music.critical {
+      background: rgb(235, 160, 172);
+      background: linear-gradient(52deg, rgba(235, 160, 172, 1) 0%, rgba(243, 139, 168, 1) 30%, rgba(231, 130, 132, 1) 48%, rgba(250, 179, 135, 1) 77%, rgba(249, 226, 175, 1) 100%);
+      background-size: 300% 300%;
+      animation: gradient 15s cubic-bezier(.55, -0.68, .48, 1.68) infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #fff;
+    }
+
+    #custom-music.Playing {
+      background: rgb(104, 157, 106);
+      background: radial-gradient(circle, rgba(104, 157, 106, 120) 0%,rgba(78,99,91,1) 15%, rgba(66, 123, 88, 120) 25%,rgba(66,123,88,120) 75%, rgba(104,157,106,120) 100%);
+      background-size: 400% 400%;
+      animation: gradient_f 9s cubic-bezier(.72, .39, .21, 1) infinite;
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
+      font-weight: bold;
+      color: #ebdbb2;
+    }
+
+    #custom-music.Paused,
+    #custom-music.Stopped {
+      background: #427b58;
+    }
+  '';
+
   catppuccinStyle = ''
     * {
       border: none;
@@ -1337,6 +1579,8 @@ in
         catppuccinStyle
       else if theme == "catppuccin-mocha" then
         catppuccinMochaStyle
+      else if theme == "gruvbox-light" then
+        gruvboxLightStyle
       else
         gruvboxStyle;
   };

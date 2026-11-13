@@ -295,5 +295,15 @@ in
       };
     })
 
+    # Gruvbox Light theme — border colors
+    (lib.mkIf (theme == "gruvbox-light") {
+      wayland.windowManager.hyprland.settings.config.general = {
+        col = {
+          active_border = "rgb(3c3836)";
+          inactive_border = "rgb(f9f5d7)";
+        };
+      };
+    })
+
   ];
 }

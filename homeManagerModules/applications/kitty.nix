@@ -231,5 +231,53 @@ in
       };
     })
 
+    # Gruvbox Light theme
+    (lib.mkIf (theme == "gruvbox-light") {
+      programs.kitty.settings = {
+        # bright bg + opacity makes the terminal unreadably washed out, so
+        # only this theme turns transparency off
+        background_opacity = lib.mkForce 1.0;
+        cursor = "#928374";
+        cursor_text_color = "background";
+        url_color = "#076678";
+        visual_bell_color = "#427b58";
+        bell_border_color = "#427b58";
+        active_border_color = "#8f3f71";
+        inactive_border_color = "#bdae93";
+        foreground = "#3c3836";
+        background = "#fbf1c7";
+        selection_foreground = "#928374";
+        selection_background = "#3c3836";
+        active_tab_foreground = "#282828";
+        active_tab_background = "#bdae93";
+        inactive_tab_foreground = "#7c6f64";
+        inactive_tab_background = "#ebdbb2";
+        # black
+        color0 = "#bdae93";
+        color8 = "#a89984";
+        # red
+        color1 = "#cc241d";
+        color9 = "#9d0006";
+        # green
+        color2 = "#98971a";
+        color10 = "#79740e";
+        # yellow
+        color3 = "#d79921";
+        color11 = "#b57614";
+        # blue
+        color4 = "#458588";
+        color12 = "#076678";
+        # purple
+        color5 = "#b16286";
+        color13 = "#8f3f71";
+        # aqua
+        color6 = "#689d6a";
+        color14 = "#427b58";
+        # white
+        color7 = "#7c6f64";
+        color15 = "#665c54";
+      };
+    })
+
   ];
 }

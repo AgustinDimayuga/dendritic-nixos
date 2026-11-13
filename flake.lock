@@ -111,7 +111,8 @@
         "spicetify-colorful": "spicetify-colorful",
         "spicetify-nix": "spicetify-nix",
         "yazi-flavors": "yazi-flavors",
-        "yazi-gruvbox-flavor": "yazi-gruvbox-flavor"
+        "yazi-gruvbox-flavor": "yazi-gruvbox-flavor",
+        "yazi-gruvbox-light-flavor": "yazi-gruvbox-light-flavor"
       }
     },
     "spicetify-colorful": {
@@ -195,6 +196,22 @@
       "original": {
         "owner": "bennyyip",
         "repo": "gruvbox-dark.yazi",
+        "type": "github"
+      }
+    },
+    "yazi-gruvbox-light-flavor": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781066676,
+        "narHash": "sha256-2Lp6vZ8XfQv13vPuw4+HPP8vORg8ewCtZ5VOOsXVq8E=",
+        "owner": "Sh00Fly",
+        "repo": "gruvbox-light.yazi",
+        "rev": "607dad36fa847be74d1e9efd8f35eb4328e45672",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Sh00Fly",
+        "repo": "gruvbox-light.yazi",
         "type": "github"
       }
     }

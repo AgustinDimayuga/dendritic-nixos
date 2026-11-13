@@ -15,6 +15,7 @@ in
       "gruvbox"
       "catppuccin-macchiato"
       "catppuccin-mocha"
+      "gruvbox-light"
     ];
     default = "dracula";
     description = "Global color theme applied across all themed apps.";
@@ -43,13 +44,21 @@ in
             };
             name = "catppuccin-macchiato-mauve-standard";
           }
-        else
+        else if theme == "catppuccin-mocha" then
           {
             package = pkgs.catppuccin-gtk.override {
               variant = "mocha";
               accents = [ "mauve" ];
             };
             name = "catppuccin-mocha-mauve-standard";
+          }
+        else
+          {
+            # gruvbox-gtk-theme installs every colorVariant by default (no
+            # override needed), same package as the dark branch above, just a
+            # different installed theme name.
+            package = pkgs.gruvbox-gtk-theme;
+            name = "Gruvbox-Light";
           };
 
       iconTheme =
@@ -71,13 +80,22 @@ in
             };
             name = "Papirus-Dark";
           }
-        else
+        else if theme == "catppuccin-mocha" then
           {
             package = pkgs.catppuccin-papirus-folders.override {
               flavor = "mocha";
               accent = "mauve";
             };
             name = "Papirus-Dark";
+          }
+        else
+          {
+            # No dedicated "gruvbox-light-icons-gtk" package exists upstream
+            # (unlike dark, which has its own jmattheis/gruvbox-dark-icons-gtk
+            # repo), so pull the Light icon variant from gruvbox-gtk-theme
+            # itself instead.
+            package = pkgs.gruvbox-gtk-theme.override { iconVariants = [ "Light" ]; };
+            name = "Gruvbox-Light";
           };
     };
   };

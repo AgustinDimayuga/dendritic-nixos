@@ -40,7 +40,7 @@ let
   '';
 
   gruvboxExtraConfig = ''
-    set-option -g status-position top
+    set-option -g status-position bottom
 
     setw -g clock-mode-colour colour135
     setw -g mode-style 'fg=colour196 bg=colour238 bold'
@@ -58,6 +58,33 @@ let
     setw -g window-status-bell-style 'fg=colour255 bg=colour1 bold'
 
     set -g message-style 'fg=colour232 bg=colour166 bold'
+    set -g message-command-style 'fg=blue bg=black'
+
+    set -g @prefix_highlight_fg 'black'
+    set -g @prefix_highlight_bg 'yellow,bold'
+    set -g @prefix_highlight_show_copy_mode 'on'
+    set -g @prefix_highlight_copy_mode_attr 'fg=black,bg=yellow,bold'
+  '';
+
+  gruvboxLightExtraConfig = ''
+    set-option -g status-position bottom
+
+    setw -g clock-mode-colour '#8f3f71'
+    setw -g mode-style 'fg=#9d0006 bg=#bdae93 bold'
+    set -g pane-border-style 'fg=#d5c4a1 bg=#fbf1c7'
+    set -g pane-active-border-style 'fg=#af3a03 bg=#ebdbb2'
+
+    set -g status-style 'bg=#427b58 fg=#fbf1c7 bold'
+
+    set -g status-right '#{prefix_highlight} #[fg=#3c3836,bg=#bdae93,bold] %d/%m #[fg=#3c3836,bg=#a89984,bold] %H:%M:%S '
+
+    setw -g window-status-current-style 'fg=#d65d0e bg=#d5c4a1 bold'
+    setw -g window-status-current-format ' #I#[fg=#504945]:#[fg=#3c3836]#W#[fg=#b57614]#F '
+    setw -g window-status-style 'fg=#7c6f64 bg=#fbf1c7 none'
+    setw -g window-status-format ' #I#[fg=#bdae93]:#[fg=#665c54]#W#[fg=#928374]#F '
+    setw -g window-status-bell-style 'fg=#fbf1c7 bg=#cc241d bold'
+
+    set -g message-style 'fg=#3c3836 bg=#d65d0e bold'
     set -g message-command-style 'fg=blue bg=black'
 
     set -g @prefix_highlight_fg 'black'
@@ -216,6 +243,8 @@ in
         "tmux-256color"
       else if theme == "catppuccin-mocha" then
         "tmux-256color"
+      else if theme == "gruvbox-light" then
+        "tmux-256color"
       else
         "screen-256color";
 
@@ -237,6 +266,8 @@ in
           catppuccinExtraConfig
         else if theme == "catppuccin-mocha" then
           catppuccinMochaExtraConfig
+        else if theme == "gruvbox-light" then
+          gruvboxLightExtraConfig
         else
           gruvboxExtraConfig
       );

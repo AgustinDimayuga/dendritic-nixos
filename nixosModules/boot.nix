@@ -15,6 +15,6 @@
     device = "nodev";
     gfxmodeEfi = "800x600";
   };
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;
 
 }

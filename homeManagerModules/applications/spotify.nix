@@ -13,6 +13,9 @@ let
       "catppuccin-macchiato"
     else if theme == "catppuccin-mocha" then
       "catppuccin-mocha"
+    else if theme == "gruvbox-light" then
+      # spicetify-colorful has no light Gruvbox scheme, so reuse the dark one.
+      "gruvbox-material-dark"
     else
       "gruvbox-material-dark";
 in

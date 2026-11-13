@@ -134,6 +134,37 @@ let
     "recolor-darkcolor" = "rgba(205,214,244,1)";
   };
 
+  gruvboxLightColors = {
+    "notification-error-bg" = "#fbf1c7";
+    "notification-error-fg" = "#9d0006";
+    "notification-warning-bg" = "#fbf1c7";
+    "notification-warning-fg" = "#b57614";
+    "notification-bg" = "#fbf1c7";
+    "notification-fg" = "#79740e";
+    "completion-bg" = "#d5c4a1";
+    "completion-fg" = "#3c3836";
+    "completion-group-bg" = "#ebdbb2";
+    "completion-group-fg" = "#928374";
+    "completion-highlight-bg" = "#076678";
+    "completion-highlight-fg" = "#d5c4a1";
+    "index-bg" = "#fbf1c7";
+    "index-fg" = "#3c3836";
+    "index-active-bg" = "#427b58";
+    "index-active-fg" = "#f9f5d7";
+    "inputbar-bg" = "#f9f5d7";
+    "inputbar-fg" = "#458588";
+    "statusbar-bg" = "#fbf1c7";
+    "statusbar-fg" = "#b16286";
+    "highlight-color" = "rgba(249, 188, 47, 0.5)";
+    "highlight-active-color" = "rgba(253, 128, 25, 0.5)";
+    "default-bg" = "#fbf1c7";
+    "default-fg" = "#3c3836";
+    "render-loading-bg" = "#f9f5d7";
+    "render-loading-fg" = "#3c3836";
+    "recolor-lightcolor" = "#f9f5d7";
+    "recolor-darkcolor" = "#3c3836";
+  };
+
   colors =
     if theme == "dracula" then
       draculaColors
@@ -141,6 +172,8 @@ let
       catppuccinColors
     else if theme == "catppuccin-mocha" then
       catppuccinMochaColors
+    else if theme == "gruvbox-light" then
+      gruvboxLightColors
     else
       gruvboxColors;
 in

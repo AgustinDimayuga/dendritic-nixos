@@ -64,6 +64,20 @@ let
     }
   '';
 
+  gruvboxLightColors = ''
+    * {
+        bg-col:  #fbf1c7;
+        bg-col-light: #fbf1c7;
+        border-col: #3c3836;
+        selected-col: #7c6f64;
+        blue: #458588;
+        fg-col: #3c3836;
+        fg-col2: #504945;
+        grey: #7c6f64;
+        width: 600;
+    }
+  '';
+
   colors =
     if theme == "dracula" then
       draculaColors
@@ -71,6 +85,8 @@ let
       catppuccinColors
     else if theme == "catppuccin-mocha" then
       catppuccinMochaColors
+    else if theme == "gruvbox-light" then
+      gruvboxLightColors
     else
       gruvboxColors;
 

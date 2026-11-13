@@ -195,8 +195,62 @@ let
     ZSH_HIGHLIGHT_STYLES[cursor]='fg=#cdd6f4'
   '';
 
-  # Gruvbox doesn't have an official zsh-syntax-highlighting theme in use here,
-  # so it falls through to the plugin's own defaults.
+  # Gruvbox (dark) doesn't have an official zsh-syntax-highlighting theme in
+  # use here, so it falls through to the plugin's own defaults — those
+  # defaults assume a dark terminal though, so Gruvbox Light needs its own
+  # explicit styles or things like file paths render almost invisibly.
+  gruvboxLightHighlighting = ''
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main cursor)
+    typeset -gA ZSH_HIGHLIGHT_STYLES
+
+    ZSH_HIGHLIGHT_STYLES[comment]='fg=#bdae93'
+    ZSH_HIGHLIGHT_STYLES[alias]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[global-alias]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[function]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[command]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[precommand]='fg=#98971a,italic'
+    ZSH_HIGHLIGHT_STYLES[autodirectory]='fg=#af3a03,italic'
+    ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=#af3a03'
+    ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=#af3a03'
+    ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=#8f3f71'
+    ZSH_HIGHLIGHT_STYLES[builtin]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[hashed-command]='fg=#98971a'
+    ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#9d0006'
+    ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter-unquoted]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[back-quoted-argument-delimiter]='fg=#9d0006'
+    ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]='fg=#9d0006'
+    ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]='fg=#9d0006'
+    ZSH_HIGHLIGHT_STYLES[command-substitution-quoted]='fg=#b57614'
+    ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter-quoted]='fg=#b57614'
+    ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#b57614'
+    ZSH_HIGHLIGHT_STYLES[single-quoted-argument-unclosed]='fg=#cc241d'
+    ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#b57614'
+    ZSH_HIGHLIGHT_STYLES[double-quoted-argument-unclosed]='fg=#cc241d'
+    ZSH_HIGHLIGHT_STYLES[rc-quote]='fg=#b57614'
+    ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument-unclosed]='fg=#cc241d'
+    ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[assign]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[named-fd]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[numeric-fd]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#cc241d'
+    ZSH_HIGHLIGHT_STYLES[path]='fg=#3c3836,underline'
+    ZSH_HIGHLIGHT_STYLES[path_pathseparator]='fg=#9d0006,underline'
+    ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=#3c3836,underline'
+    ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]='fg=#9d0006,underline'
+    ZSH_HIGHLIGHT_STYLES[globbing]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=#8f3f71'
+    ZSH_HIGHLIGHT_STYLES[back-quoted-argument-unclosed]='fg=#cc241d'
+    ZSH_HIGHLIGHT_STYLES[redirection]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[arg0]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[default]='fg=#3c3836'
+    ZSH_HIGHLIGHT_STYLES[cursor]='fg=#3c3836'
+  '';
+
   syntaxHighlighting =
     if theme == "dracula" then
       draculaHighlighting
@@ -204,6 +258,8 @@ let
       catppuccinMacchiatoHighlighting
     else if theme == "catppuccin-mocha" then
       catppuccinMochaHighlighting
+    else if theme == "gruvbox-light" then
+      gruvboxLightHighlighting
     else
       "";
 
@@ -250,6 +306,8 @@ let
       "#8bd5ca" # Macchiato teal
     else if theme == "catppuccin-mocha" then
       "#94e2d5" # Mocha teal
+    else if theme == "gruvbox-light" then
+      "#427b58" # Gruvbox Light aqua
     else
       "#8ec07c"; # Gruvbox aqua
 
@@ -260,7 +318,8 @@ let
     fi
   '';
 
-  promptOverride = if theme == "gruvbox" then gruvboxPromptOverride else "";
+  promptOverride =
+    if theme == "gruvbox" || theme == "gruvbox-light" then gruvboxPromptOverride else "";
 in
 {
   programs.zsh = {
