@@ -9,6 +9,7 @@
     ./git.nix
     ./tmux.nix
     ./vscode.nix
+    ./discord.nix
     ./spotify.nix
     ./browserapplications.nix
     ./chromium.nix

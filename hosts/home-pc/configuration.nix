@@ -43,6 +43,7 @@
     "nix-command"
     "flakes"
   ];
+  programs.steam.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
