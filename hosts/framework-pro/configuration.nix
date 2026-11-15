@@ -23,6 +23,7 @@
     ./../../nixosModules/neovim-pkgs.nix
     ./../../nixosModules/fonts.nix
     ./../../nixosModules/plymouth.nix
+    ./../../nixosModules/file_manager.nix
     ./hibernation.nix
 
     ./hardware-configuration.nix
@@ -58,6 +59,5 @@
   time.timeZone = "America/Los_Angeles";
   programs.firefox.enable = true;
   system.stateVersion = "26.05"; # Did you read the comment?
-  services.gvfs.enable = true;
 
 }

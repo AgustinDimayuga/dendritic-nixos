@@ -11,27 +11,28 @@
   };
 
   config = lib.mkMerge [
-    # default (red values)
     {
       boot.loader.systemd-boot.enable = false;
-      boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot";
+      boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
+      boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
       boot.loader.grub = {
         enable = true;
         efiSupport = true;
-        efiInstallAsRemovable = lib.mkDefault true;
+        efiInstallAsRemovable = lib.mkDefault false;
         device = "nodev";
+        useOSProber = lib.mkDefault true;
         gfxmodeEfi = "800x600";
       };
       boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     }
 
-    # when kernel-latest is on (green values)
+    # kernel-latest machine, the laptop: single-boot layout (red values)
     (lib.mkIf config.kernel-latest.enable {
       boot.kernelPackages = pkgs.linuxPackages_latest;
-      boot.loader.efi.efiSysMountPoint = "/boot/efi";
-      boot.loader.efi.canTouchEfiVariables = true;
-      boot.loader.grub.efiInstallAsRemovable = false;
-      boot.loader.grub.useOSProber = true;
+      boot.loader.efi.efiSysMountPoint = lib.mkForce "/boot";
+      boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
+      boot.loader.grub.efiInstallAsRemovable = lib.mkForce true;
+      boot.loader.grub.useOSProber = lib.mkForce false;
     })
   ];
 }
