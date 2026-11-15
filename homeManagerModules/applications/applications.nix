@@ -13,6 +13,7 @@
     ./spotify.nix
     ./browserapplications.nix
     ./chromium.nix
+    ./hyprfm.nix
     ./zsh.nix
   ];
 

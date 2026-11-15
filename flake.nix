@@ -15,7 +15,7 @@
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
-
+    hyprfm.url = "github:soyeb-jim285/hyprfm";
     spicetify-colorful.url = "github:sanoojes/spicetify-colorful";
     spicetify-colorful.flake = false;
   };
@@ -32,6 +32,7 @@
       nix-vscode-extensions,
       spicetify-colorful,
       spicetify-nix,
+      hyprfm,
     }@inputs:
     let
       lib = nixpkgs.lib;

@@ -58,5 +58,6 @@
   time.timeZone = "America/Los_Angeles";
   programs.firefox.enable = true;
   system.stateVersion = "26.05"; # Did you read the comment?
+  services.gvfs.enable = true;
 
 }

@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "ghostty": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793041700,
+        "narHash": "sha256-MKIh9UZujaeh1nDaMjX1l2Dgm98yVZC4rzhioFpWIDI=",
+        "owner": "ghostty-org",
+        "repo": "ghostty",
+        "rev": "da5936c2287cd7f466acdad3cc000de5ce35ccaa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ghostty-org",
+        "repo": "ghostty",
+        "rev": "da5936c2287cd7f466acdad3cc000de5ce35ccaa",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -21,9 +38,30 @@
         "type": "github"
       }
     },
+    "hyprfm": {
+      "inputs": {
+        "ghostty": "ghostty",
+        "nixpkgs": "nixpkgs",
+        "quill": "quill",
+        "quill-icons": "quill-icons"
+      },
+      "locked": {
+        "lastModified": 1794694654,
+        "narHash": "sha256-ECsTYa2tk0mEKcAWLpatakCEdg/2AwHpzQm/pDJSo4g=",
+        "owner": "soyeb-jim285",
+        "repo": "hyprfm",
+        "rev": "ebba19a0760ad06283f93f2169e10b440d3700d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "soyeb-jim285",
+        "repo": "hyprfm",
+        "type": "github"
+      }
+    },
     "nix-vscode-extensions": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1792728804,
@@ -41,7 +79,7 @@
     },
     "nixos-hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1792697326,
@@ -59,6 +97,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1794386569,
+        "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1784564315,
         "narHash": "sha256-7OpsHHIZFUBLbeHNQ0oC40DZRQjsmGWodXge+OqgPgk=",
         "owner": "nixos",
@@ -73,7 +127,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1789546076,
         "narHash": "sha256-vWkSk5bbfTqdtMoSgD9FshACO8JCvXTFi+3cqEp0mH0=",
@@ -86,7 +140,7 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1792615934,
         "narHash": "sha256-MlvRfa1O5Cqc2/a+gG+l9TSuowEoCKCmrJ1d9oAVm0I=",
@@ -102,12 +156,47 @@
         "type": "github"
       }
     },
+    "quill": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793427375,
+        "narHash": "sha256-ySCOy8qdcr0kijmWsF0JPPFZ4NPYMRHtQSR2Yk7Dw1E=",
+        "owner": "soyeb-jim285",
+        "repo": "quill",
+        "rev": "1fe3afd493838b9799ee056a7367cfd5cdc185fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "soyeb-jim285",
+        "repo": "quill",
+        "rev": "1fe3afd493838b9799ee056a7367cfd5cdc185fd",
+        "type": "github"
+      }
+    },
+    "quill-icons": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787955508,
+        "narHash": "sha256-NFUw1NlCAh48O7rpHyjU33C3DAhhSaGFDjLzi3DKJEk=",
+        "owner": "soyeb-jim285",
+        "repo": "quill-icons",
+        "rev": "69b653672ece8652cfef52c1c228abe9e2c4fce0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "soyeb-jim285",
+        "repo": "quill-icons",
+        "rev": "69b653672ece8652cfef52c1c228abe9e2c4fce0",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "hyprfm": "hyprfm",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "spicetify-colorful": "spicetify-colorful",
         "spicetify-nix": "spicetify-nix",
         "yazi-flavors": "yazi-flavors",
