@@ -23,5 +23,13 @@
       gestures = {
       };
     };
+
+    device = [
+      {
+        name = "logitech-usb-receiver";
+        accel_profile = "flat";
+        sensitivity = 1; # Adjust between 0.1 and 1.0 until it feels right
+      }
+    ];
   };
 }

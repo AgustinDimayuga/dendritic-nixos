@@ -15,6 +15,7 @@
     ./chromium.nix
     ./hyprfm.nix
     ./zsh.nix
+    ./utility.nix
   ];
 
 }
